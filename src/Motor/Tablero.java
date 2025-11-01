@@ -1,12 +1,12 @@
-package motor;
+package Motor;
 
-import clases.Ficha;
-import clases.Peon;
-import clases.Torre;
-import clases.Caballo;
-import clases.Alfil;
-import clases.Reina;
-import clases.Rey;
+import Clases.Alfil;
+import Clases.Caballo;
+import Clases.Ficha;
+import Clases.Peon;
+import Clases.Reina;
+import Clases.Rey;
+import Clases.Torre;
 
 public class Tablero {
 
@@ -85,11 +85,11 @@ public class Tablero {
 
         int filaOrigen = o[0], colOrigen = o[1];
         int filaDestino = d[0], colDestino = d[1];
-
+ 
         Ficha ficha = tablero[filaOrigen][colOrigen];
 
         if (ficha == null) {
-            System.out.println("No hay ninguna ficha en " + origen);
+            System.out.println("No hay ninguna ficha en " + origen + "\n");
             return false;
         }
 
@@ -106,7 +106,7 @@ public class Tablero {
     }
 
     // ---------------------------------------------------------
-    // Muestra el tablero por consola (opcional, útil para probar)
+    // Muestra el tablero por consola
     // ---------------------------------------------------------
     public void mostrarTablero() {
         System.out.println("   a  b  c  d  e  f  g  h");

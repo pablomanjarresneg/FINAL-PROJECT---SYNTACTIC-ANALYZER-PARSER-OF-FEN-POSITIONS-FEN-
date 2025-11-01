@@ -1,4 +1,4 @@
-package clases;
+package Clases;
 
 public class Torre extends Ficha {
 

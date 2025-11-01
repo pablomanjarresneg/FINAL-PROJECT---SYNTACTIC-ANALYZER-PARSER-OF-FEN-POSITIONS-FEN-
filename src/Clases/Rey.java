@@ -1,4 +1,5 @@
-package clases;
+package Clases;
+;
 
 public class Rey extends Ficha {
 

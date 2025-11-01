@@ -1,7 +1,6 @@
-package main;
+package Main;
 
-import motor.Tablero;
-
+import Motor.Tablero;
 import java.util.Scanner;
 
 public class Main {

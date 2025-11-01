@@ -1,4 +1,4 @@
-package clases;
+package Clases;
 
 public abstract class Ficha {
     protected String color;     // "blanco" o "negro"
