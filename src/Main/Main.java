@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 package Main;
-=======
 package main;
 
 import motor.Tablero;
