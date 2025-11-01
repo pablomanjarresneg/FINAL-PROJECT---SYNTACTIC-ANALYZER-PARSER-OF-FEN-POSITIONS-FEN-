@@ -1,8 +1,4 @@
 package Main;
-package main;
-
-import motor.Tablero;
-import parser.Codificador;
 
 import Motor.Tablero;
 import java.util.Scanner;
