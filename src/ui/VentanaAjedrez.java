@@ -5,6 +5,7 @@ import Motor.Tablero;
 import Parser.Codificador;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 
 public class VentanaAjedrez extends JFrame {
     private final Tablero tablero;
@@ -54,7 +55,9 @@ public class VentanaAjedrez extends JFrame {
                     casillas[filaTablero][columnaTablero].setFocusable(false);
                     casillas[filaTablero][columnaTablero].setFont(new Font("Arial Unicode MS", Font.PLAIN, 38));
                     casillas[filaTablero][columnaTablero].setPreferredSize(new Dimension(80, 80));
-                    Color color = (filaTablero + columnaTablero) % 2 == 0 ? Color.WHITE : new Color(139, 69, 19);
+
+                    Color color = (filaTablero + columnaTablero) % 2 == 0 ? Color.WHITE : new Color(46, 139, 87);
+
                     casillas[filaTablero][columnaTablero].setBackground(color);
                     panelTablero.add(casillas[filaTablero][columnaTablero]);
                 }
@@ -63,10 +66,19 @@ public class VentanaAjedrez extends JFrame {
         }
         // Crear panel para movimientos
         JPanel panelMovimientos = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panelMovimientos.setMaximumSize(new Dimension(350, 30));
+        panelMovimientos.setMaximumSize(new Dimension(getWidth() / 2, 30));
         panelMovimientos.setAlignmentX(CENTER_ALIGNMENT);
         panelMovimientos.setBackground(Color.LIGHT_GRAY);
-        panelMovimientos.setBorder(BorderFactory.createTitledBorder("Movimientos"));
+        panelMovimientos.setAlignmentX(CENTER_ALIGNMENT);
+        panelMovimientos.setFont(new Font("Arial", Font.BOLD, 15));
+        String tituloTurno = esTurnoBlancas ? "Turno de las Blancas" : "Turno de las Negras";
+        
+        panelMovimientos.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createEtchedBorder(), 
+            tituloTurno, 
+            TitledBorder.CENTER,     
+            TitledBorder.DEFAULT_POSITION  
+        ));
 
         // Área de texto para movimientos
         areaMovimientos = new JTextField(25);
@@ -85,6 +97,16 @@ public class VentanaAjedrez extends JFrame {
         guardarYCargarPanel.setMaximumSize(new Dimension(20,20));
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.setFocusPainted(false);
+        botonGuardar.addActionListener( e -> {
+            String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo para guardar la notación BNF:", "Guardar Partida", JOptionPane.PLAIN_MESSAGE);
+            if (nombreArchivo != null && !nombreArchivo.trim().isEmpty()) {
+                nombreArchivo = "partidas/" + nombreArchivo + ".bnf";
+            } else {
+                JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            codificador.guardarPartidaBNF(nombreArchivo);
+        });
         JButton botonCargar = new JButton("Cargar");
         botonCargar.setFocusPainted(false);
 

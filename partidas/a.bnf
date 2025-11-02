@@ -1,0 +1,12 @@
+# Notación BNF de la partida
+
+<partida> ::= <posicion_inicial> <secuencia_movimientos>
+<posicion_inicial> ::= "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+<secuencia_movimientos> ::= 
+
+
+# Definiciones base
+<columna> ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h"
+<fila> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8"
+<posicion> ::= <columna><fila>
+<movimiento> ::= <posicion> <posicion>
