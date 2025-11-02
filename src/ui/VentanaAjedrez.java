@@ -7,12 +7,13 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-public class VentanaAjedrez extends JFrame {
+public class VentanaAjedrez extends JFrame  {
     private final Tablero tablero;
     private JButton[][] casillas;
     private JTextField areaMovimientos;
     private final Codificador codificador;
     private boolean esTurnoBlancas = true;
+
     public VentanaAjedrez() {
         tablero = new Tablero();
         codificador = new Codificador();
@@ -21,8 +22,7 @@ public class VentanaAjedrez extends JFrame {
 
     private void initUI() {
         setTitle("Tablero de Ajedrez");
-        setSize(700, 700);
-        setMaximumSize(new Dimension(900, 1000));
+        setSize(700, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         JPanel panelTablero = new JPanel(new GridLayout(9,9));
@@ -89,12 +89,11 @@ public class VentanaAjedrez extends JFrame {
         });
         SwingUtilities.invokeLater(() -> areaMovimientos.requestFocus());
 
-        
-
         panelMovimientos.add(areaMovimientos, BorderLayout.PAGE_END);
 
         JPanel guardarYCargarPanel = new JPanel();
         guardarYCargarPanel.setMaximumSize(new Dimension(20,20));
+
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.setFocusPainted(false);
         botonGuardar.addActionListener( e -> {
@@ -106,10 +105,22 @@ public class VentanaAjedrez extends JFrame {
                 return;
             }
             codificador.guardarPartidaBNF(nombreArchivo);
+            JOptionPane.showMessageDialog(this, "Partida guardada exitosamente.", "Guardar Partida", JOptionPane.INFORMATION_MESSAGE);
         });
+
         JButton botonCargar = new JButton("Cargar");
         botonCargar.setFocusPainted(false);
-
+        botonCargar.addActionListener(e -> {
+            String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo para cargar la notación BNF:", "Cargar Partida", JOptionPane.PLAIN_MESSAGE);
+            if (nombreArchivo != null && !nombreArchivo.trim().isEmpty()) {
+                nombreArchivo = "partidas/" + nombreArchivo + ".bnf";
+            } else {
+                JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // implement logic to check if the file actually exists
+            codificador.cargarPartidaBNF(nombreArchivo);
+        });
         guardarYCargarPanel.add(botonGuardar);
         guardarYCargarPanel.add(botonCargar);
 
@@ -136,6 +147,8 @@ public class VentanaAjedrez extends JFrame {
 
     private void cambiarTurno() {
         codificador.limpiarMovimientos();
+        esTurnoBlancas = !esTurnoBlancas;
+        actualizarTituloTurno();
     }
 
     private void procesarMovimiento(JTextField campo, boolean esBlanca) {
@@ -143,11 +156,12 @@ public class VentanaAjedrez extends JFrame {
         if (movimiento.isEmpty()) return;
 
         if (!codificador.validarBNF(movimiento)) {
-            JOptionPane.showMessageDialog(this, "Movimiento inválido: " + movimiento, "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Movimiento inválido según BNF: " + movimiento, "Error", JOptionPane.ERROR_MESSAGE);
             campo.setText("");
+            campo.requestFocusInWindow();
             return;
         }
-        boolean aplicado = intentarAplicarMovimiento(movimiento, !esBlanca);
+        boolean aplicado = intentarAplicarMovimiento(movimiento, esBlanca);
         codificador.limpiarMovimientos();
 
         if (aplicado) {
@@ -164,18 +178,38 @@ public class VentanaAjedrez extends JFrame {
         String origen = movimiento.substring(0, 2);
         String destino = movimiento.substring(2, 4);
 
-        if (tablero.esTurnoCorrecto(origen, esBlanca)) {
+        if (!tablero.esTurnoCorrecto(origen, esBlanca)) {
             return false;
         }
         boolean exito = tablero.mover(origen, destino);
 
         if (exito) {
             codificador.registrarMovimiento(movimiento);
-            esTurnoBlancas = !esTurnoBlancas;
             return true;
         }
 
         return false;
+    }
+
+    private void actualizarTituloTurno() {
+        String tituloTurno = esTurnoBlancas ? "Turno de las Blancas" : "Turno de las Negras";
+        
+        // Find the movements panel and update its border
+        Container contentPane = getContentPane();
+        for (Component comp : contentPane.getComponents()) {
+            if (comp instanceof JPanel panel) {
+                if (panel.getBorder() instanceof TitledBorder) {
+                    panel.setBorder(BorderFactory.createTitledBorder(
+                        BorderFactory.createEtchedBorder(), 
+                        tituloTurno, 
+                        TitledBorder.CENTER,     
+                        TitledBorder.DEFAULT_POSITION  
+                    ));
+                    panel.repaint();
+                    break;
+                }
+            }
+        }
     }
     
     public static void main(String[] args) {

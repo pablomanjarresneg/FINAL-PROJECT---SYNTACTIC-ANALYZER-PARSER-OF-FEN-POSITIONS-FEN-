@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Codificador {
-    private List<String> movimientos;
+    public List<String> movimientos;
     private static final String FEN_INICIAL = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     public Codificador() {
@@ -71,7 +71,7 @@ public class Codificador {
             writer.write("<secuencia_movimientos> ::= ");
             
             for (int i = 0; i < movimientos.size(); i++) {
-                writer.write("<movimiento" + (i+1) + ">");
+                writer.write("<movimiento" + movimientos.get(i+1) + ">");
                 if (i < movimientos.size() - 1) {
                     writer.write(" ");
                 }
@@ -93,7 +93,9 @@ public class Codificador {
             System.err.println("Error al guardar la partida: " + e.getMessage());
         }
     }
+    public void cargarPartidaBNF(String nombreArchivo) {
 
+    }
     public String[] obtenerMovimientos() {
         return movimientos.toArray(new String[0]);
     }
