@@ -4,11 +4,12 @@ import Clases.Ficha;
 import Motor.Tablero;
 import Parser.Codificador;
 import java.awt.*;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
 public class VentanaAjedrez extends JFrame  {
-    private final Tablero tablero;
+    private Tablero tablero;
     private JButton[][] casillas;
     private JTextField areaMovimientos;
     private final Codificador codificador;
@@ -107,6 +108,10 @@ public class VentanaAjedrez extends JFrame  {
                 JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            if(codificador.archivoExiste(nombreArchivo)) {
+                JOptionPane.showMessageDialog(this, "El archivo " + nombreArchivo + " ya existe. No se sobrescribirá.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             codificador.guardarPartidaBNF(nombreArchivo);
             JOptionPane.showMessageDialog(this, "Partida guardada exitosamente.", "Guardar Partida", JOptionPane.INFORMATION_MESSAGE);
         });
@@ -114,18 +119,16 @@ public class VentanaAjedrez extends JFrame  {
         JButton botonCargar = new JButton("Cargar");
         botonCargar.setFocusPainted(false);
         botonCargar.addActionListener(e -> {
-            String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo para cargar la notación BNF:", "Cargar Partida", JOptionPane.PLAIN_MESSAGE);
-            if (nombreArchivo != null && !nombreArchivo.trim().isEmpty()) {
-                nombreArchivo = "partidas/" + nombreArchivo + ".bnf";
-            } else {
-                JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            // implement logic to check if the file actually exists
-            codificador.cargarPartidaBNF(nombreArchivo);
-        });
-        guardarYCargarPanel.add(botonGuardar);
-        guardarYCargarPanel.add(botonCargar);
+        String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo a cargar:", "Cargar Partida", JOptionPane.PLAIN_MESSAGE);
+        if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        nombreArchivo = nombreArchivo.trim();
+        cargarPartida(nombreArchivo);
+    });
+    guardarYCargarPanel.add(botonGuardar);
+    guardarYCargarPanel.add(botonCargar);
 
         add(guardarYCargarPanel, BorderLayout.NORTH);
         add(panelTablero, BorderLayout.CENTER);
@@ -133,7 +136,48 @@ public class VentanaAjedrez extends JFrame  {
         actualizarTablero();
         setLocationRelativeTo(null);
     }
-
+    private void cargarPartida(String nombreArchivo) {
+        String rutaCompleta = "partidas/" + nombreArchivo + ".bnf";
+        
+        // Load movements from file
+        List<String> movimientosCargados = codificador.cargarPartidaBNF(rutaCompleta);
+        
+        if (movimientosCargados.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se pudieron cargar movimientos del archivo.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Reset board to initial position
+        tablero = new Tablero(); // Reset to initial state
+        esTurnoBlancas = true;   // Reset turn to white
+        
+        // Apply each movement to the board
+        boolean todosAplicados = true;
+        for (String movimiento : movimientosCargados) {
+            if (movimiento.length() == 4) { // e2e4 format
+                String origen = movimiento.substring(0, 2);
+                String destino = movimiento.substring(2, 4);
+                
+                if (!tablero.mover(origen, destino)) {
+                    System.err.println("Error aplicando movimiento: " + movimiento);
+                    todosAplicados = false;
+                    break;
+                }
+                esTurnoBlancas = !esTurnoBlancas; // Alternate turns
+            }
+        }
+        
+        if (todosAplicados) {
+            actualizarTablero();
+            actualizarTituloTurno();
+            JOptionPane.showMessageDialog(this, 
+                "Partida cargada exitosamente. " + movimientosCargados.size() + " movimientos aplicados.", 
+                "Cargar Partida", 
+                JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al aplicar algunos movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     private void actualizarTablero() {
         Ficha[][] tableroFichas = tablero.getTablero();
         for (int i = 0; i < 8; i++) {
@@ -213,6 +257,7 @@ public class VentanaAjedrez extends JFrame  {
         }
     }
     
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater( () -> {
             new VentanaAjedrez().setVisible(true);

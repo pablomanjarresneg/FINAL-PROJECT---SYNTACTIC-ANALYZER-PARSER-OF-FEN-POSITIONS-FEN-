@@ -62,8 +62,12 @@ public class Codificador {
             movimientos.add(movimiento);
         }
     }
-
+    public boolean archivoExiste(String nombreArchivo) {
+        java.io.File archivo = new java.io.File(nombreArchivo);
+        return archivo.exists();
+    }
     public void guardarPartidaBNF(String nombreArchivo) {
+        if (!archivoExiste(nombreArchivo)) {
         try (FileWriter writer = new FileWriter(nombreArchivo)) {
             writer.write("# Notación BNF de la partida\n\n");
             writer.write("<partida> ::= <posicion_inicial> <secuencia_movimientos>\n");
@@ -94,11 +98,49 @@ public class Codificador {
         } catch (IOException e) {
             System.err.println("Error al guardar la partida: " + e.getMessage());
         }
+        } else {
+            System.out.println("El archivo " + nombreArchivo + " ya existe. No se sobrescribirá.");
+        }
     }
-    public void cargarPartidaBNF(String nombreArchivo) {
+    public ArrayList<String> cargarPartidaBNF(String nombreArchivo) {
+        ArrayList<String> movimientosCargados = new ArrayList<>();
+        try {
+            java.io.File archivo = new java.io.File(nombreArchivo);
+            java.util.Scanner scanner = new java.util.Scanner(archivo);
+            boolean enSeccionMovimientos = false;
+            while (scanner.hasNextLine()) {
+                String linea = scanner.nextLine().trim();
+                if (linea.startsWith("<secuencia_movimientos>")) {
+                    enSeccionMovimientos = true;
+                    continue;
+                }
+                if (enSeccionMovimientos) {
+                    if (linea.isEmpty() || linea.startsWith("#")) {
+                        continue; // Saltar líneas vacías o comentarios
+                    }
+                    if (linea.startsWith("<movimiento")) {
+                        String[] partes = linea.split("::=");
+                        if (partes.length == 2) {
+                            String movimiento = partes[1].trim().replaceAll("\"", "");
+                            movimientosCargados.add(movimiento);
+                        }
+                    } else {
+                        // Salir de la sección de movimientos si encontramos otra definición
+                        break;
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error al cargar la partida: " + e.getMessage());
+        }
 
+        return movimientosCargados;
     }
 
+    public List<String> getMovimientos() {
+        return new ArrayList<>(movimientos);
+    }
     public void limpiarMovimientos() {
         movimientos.clear();
     }
