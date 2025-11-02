@@ -104,23 +104,14 @@ public class Tablero {
             return false;
         }
     }
-
-    // ---------------------------------------------------------
-    // Muestra el tablero por consola
-    // ---------------------------------------------------------
-    public void mostrarTablero() {
-        System.out.println("   a  b  c  d  e  f  g  h");
-        for (int fila = 0; fila < 8; fila++) {
-            System.out.print((8 - fila) + " ");
-            for (int col = 0; col < 8; col++) {
-                if (tablero[fila][col] == null) {
-                    System.out.print(" . ");
-                } else {
-                    System.out.print(" " + tablero[fila][col].getSimbolo() + " ");
-                }
-            }
-            System.out.println(" " + (8 - fila));
+    public boolean esTurnoCorrecto(String origen, boolean esBlanca) {
+        int[] o = convertirPos(origen);
+        int filaOrigen = o[0], colOrigen = o[1];
+        Ficha ficha = tablero[filaOrigen][colOrigen];
+        if (ficha == null) {
+            return false;
         }
-        System.out.println("   a  b  c  d  e  f  g  h");
+        return (esBlanca && ficha.getColor().equals("blanco")) || (!esBlanca && ficha.getColor().equals("negro"));
     }
+    
 }

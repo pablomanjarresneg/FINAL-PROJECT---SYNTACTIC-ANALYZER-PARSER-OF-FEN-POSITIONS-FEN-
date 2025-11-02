@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class Codificador {
     private List<String> movimientos;
@@ -20,8 +19,15 @@ public class Codificador {
         // <posicion> ::= <columna><fila>
         // <columna> ::= [a-h]
         // <fila> ::= [1-8]
-        String patron = "^[a-h][1-8]\\s[a-h][1-8]$";
-        return Pattern.matches(patron, movimiento);
+        String notacionCoordenadasCompletas = "^[a-h][1-8][a-h][1-8]$";                        // e2e4 (desde-hasta)
+        String notacionCoordenadaDestino = "^[a-h][1-8]$";                                      // e4 (solo destino)
+        
+        // Limpiar espacios en blanco
+        movimiento = movimiento.replaceAll("\\s+", "");
+        
+        // Verificar si el movimiento coincide con algún patrón válido
+        return movimiento.matches(notacionCoordenadasCompletas) || 
+               movimiento.matches(notacionCoordenadaDestino);
     }
 
     public boolean validarFEN(String fen) {
