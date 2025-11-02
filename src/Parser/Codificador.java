@@ -19,8 +19,8 @@ public class Codificador {
         // <posicion> ::= <columna><fila>
         // <columna> ::= [a-h]
         // <fila> ::= [1-8]
-        String notacionCoordenadasCompletas = "^[a-h][1-8][a-h][1-8]$";                        // e2e4 (desde-hasta)
-        String notacionCoordenadaDestino = "^[a-h][1-8]$";                                      // e4 (solo destino)
+        String notacionCoordenadasCompletas = "^[a-h][1-8][a-h][1-8]$";// e2e4 (desde-hasta)
+        String notacionCoordenadaDestino = "^[a-h][1-8]$";// e4 (solo destino)
         
         // Limpiar espacios en blanco
         movimiento = movimiento.replaceAll("\\s+", "");
@@ -69,18 +69,20 @@ public class Codificador {
             writer.write("<partida> ::= <posicion_inicial> <secuencia_movimientos>\n");
             writer.write("<posicion_inicial> ::= \"" + FEN_INICIAL + "\"\n");
             writer.write("<secuencia_movimientos> ::= ");
-            
-            for (int i = 0; i < movimientos.size(); i++) {
-                writer.write("<movimiento" + movimientos.get(i+1) + ">");
-                if (i < movimientos.size() - 1) {
-                    writer.write(" ");
+
+            String[] movimientosArray = movimientos.toArray(String[]::new);
+
+            for (int i = 0; i < movimientosArray.length; i++) {
+                writer.write("<movimiento" + (i+1) + ">");
+                if (i < movimientosArray.length - 1) {
+                    writer.write(" <movimiento" + (i+2) + ">");
                 }
             }
             writer.write("\n\n");
 
             // Definir cada movimiento individual
-            for (int i = 0; i < movimientos.size(); i++) {
-                writer.write("<movimiento" + (i+1) + "> ::= \"" + movimientos.get(i) + "\"\n");
+            for (int i = 0; i < movimientosArray.length; i++) {
+                writer.write("<movimiento" + (i+1) + "> ::= \"" + movimientosArray[i] + "\"\n");
             }
 
             // Agregar definiciones base
@@ -95,9 +97,6 @@ public class Codificador {
     }
     public void cargarPartidaBNF(String nombreArchivo) {
 
-    }
-    public String[] obtenerMovimientos() {
-        return movimientos.toArray(new String[0]);
     }
 
     public void limpiarMovimientos() {

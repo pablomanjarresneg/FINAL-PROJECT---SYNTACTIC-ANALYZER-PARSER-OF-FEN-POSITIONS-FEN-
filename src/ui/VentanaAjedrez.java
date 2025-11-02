@@ -33,16 +33,19 @@ public class VentanaAjedrez extends JFrame  {
                 if (i == 0 && j == 0) {
                     JButton esquinaVacia = new JButton();
                     esquinaVacia.setBackground(Color.WHITE);
+                    esquinaVacia.setSize(new Dimension(50,50));
                     panelTablero.add(esquinaVacia);
                 } else if (i == 0) {
                     // Fila superior (etiquetas de columnas)
                     JButton etiqueta = new JButton(String.valueOf((char)('A' + j - 1)));
+                    etiqueta.setSize(new Dimension(50, 50));
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
                     etiqueta.setBackground(Color.WHITE);
                     panelTablero.add(etiqueta);
                 } else if (j == 0) {
                     // Columna izquierda (etiquetas de filas)
                     JButton etiqueta = new JButton(String.valueOf(9 - i));
+                    etiqueta.setSize(new Dimension(50, 50));
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
                     etiqueta.setBackground(Color.WHITE);
                     panelTablero.add(etiqueta);
@@ -146,7 +149,6 @@ public class VentanaAjedrez extends JFrame  {
 
 
     private void cambiarTurno() {
-        codificador.limpiarMovimientos();
         esTurnoBlancas = !esTurnoBlancas;
         actualizarTituloTurno();
     }
@@ -162,7 +164,6 @@ public class VentanaAjedrez extends JFrame  {
             return;
         }
         boolean aplicado = intentarAplicarMovimiento(movimiento, esBlanca);
-        codificador.limpiarMovimientos();
 
         if (aplicado) {
             campo.setText("");
