@@ -106,31 +106,31 @@ public class Codificador {
         ArrayList<String> movimientosCargados = new ArrayList<>();
         try {
             java.io.File archivo = new java.io.File(nombreArchivo);
-            java.util.Scanner scanner = new java.util.Scanner(archivo);
-            boolean enSeccionMovimientos = false;
-            while (scanner.hasNextLine()) {
-                String linea = scanner.nextLine().trim();
-                if (linea.startsWith("<secuencia_movimientos>")) {
-                    enSeccionMovimientos = true;
-                    continue;
-                }
-                if (enSeccionMovimientos) {
-                    if (linea.isEmpty() || linea.startsWith("#")) {
-                        continue; // Saltar líneas vacías o comentarios
+            try (java.util.Scanner scanner = new java.util.Scanner(archivo)) {
+                boolean enSeccionMovimientos = false;
+                while (scanner.hasNextLine()) {
+                    String linea = scanner.nextLine().trim();
+                    if (linea.startsWith("<secuencia_movimientos>")) {
+                        enSeccionMovimientos = true;
+                        continue;
                     }
-                    if (linea.startsWith("<movimiento")) {
-                        String[] partes = linea.split("::=");
-                        if (partes.length == 2) {
-                            String movimiento = partes[1].trim().replaceAll("\"", "");
-                            movimientosCargados.add(movimiento);
+                    if (enSeccionMovimientos) {
+                        if (linea.isEmpty() || linea.startsWith("#")) {
+                            continue; 
                         }
-                    } else {
-                        // Salir de la sección de movimientos si encontramos otra definición
-                        break;
+                        if (linea.startsWith("<movimiento")) {
+                            String[] partes = linea.split("::=");
+                            if (partes.length == 2) {
+                                String movimiento = partes[1].trim().replaceAll("\"", "");
+                                movimientosCargados.add(movimiento);
+                            }
+                        } else {
+                            // Salir de la sección de movimientos si encontramos otra definición
+                            break;
+                        }
                     }
                 }
             }
-            
         } catch (Exception e) {
             System.err.println("Error al cargar la partida: " + e.getMessage());
         }

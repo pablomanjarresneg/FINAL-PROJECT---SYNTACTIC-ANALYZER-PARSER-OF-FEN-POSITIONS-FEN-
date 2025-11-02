@@ -7,10 +7,11 @@ import Clases.Peon;
 import Clases.Reina;
 import Clases.Rey;
 import Clases.Torre;
+import javax.swing.ImageIcon;
 
 public class Tablero {
 
-    private Ficha[][] tablero; // matriz que representa las 64 casillas del tablero
+    private final Ficha[][] tablero; // matriz que representa las 64 casillas del tablero
 
     public Tablero() {
         tablero = new Ficha[8][8];
@@ -25,40 +26,39 @@ public class Tablero {
     // Inicializa las piezas en sus posiciones estándar de ajedrez
     // ---------------------------------------------------------
     private void inicializarTablero() {
-
         // Peones blancos
         for (int col = 0; col < 8; col++) {
-            tablero[6][col] = new Peon("blanco", "peon", '♙');
+            tablero[6][col] = new Peon("blanco", "peon", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Pawn.png").getImage());
         }
 
         // Peones negros
         for (int col = 0; col < 8; col++) {
-            tablero[1][col] = new Peon("negro", "peon", '♟');
+            tablero[1][col] = new Peon("negro", "peon", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Pawn.png").getImage());
         }
 
         // Torres
-        tablero[7][0] = new Torre("blanco", "torre", '♖');
-        tablero[7][7] = new Torre("blanco", "torre", '♖');
-        tablero[0][0] = new Torre("negro", "torre", '♜');
-        tablero[0][7] = new Torre("negro", "torre", '♜');
+        tablero[7][0] = new Torre("blanco", "torre", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Rook.png").getImage());
+        tablero[7][7] = new Torre("blanco", "torre", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Rook.png").getImage());
+        tablero[0][0] = new Torre("negro", "torre", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Rook.png").getImage());
+        tablero[0][7] = new Torre("negro", "torre", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Rook.png").getImage());
 
         // Caballos
-        tablero[7][1] = new Caballo("blanco", "caballo", '♘');
-        tablero[7][6] = new Caballo("blanco", "caballo", '♘');
-        tablero[0][1] = new Caballo("negro", "caballo", '♞');
-        tablero[0][6] = new Caballo("negro", "caballo", '♞');
+        tablero[7][1] = new Caballo("blanco", "caballo", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Knight.png").getImage());
+        tablero[7][6] = new Caballo("blanco", "caballo", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Knight.png").getImage());
+        tablero[0][1] = new Caballo("negro", "caballo", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Knight.png").getImage());
+        tablero[0][6] = new Caballo("negro", "caballo", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Knight.png").getImage());
 
         // Alfiles
-        tablero[7][2] = new Alfil("blanco", "alfil", '♗');
-        tablero[7][5] = new Alfil("blanco", "alfil", '♗');
-        tablero[0][2] = new Alfil("negro", "alfil", '♝');
-        tablero[0][5] = new Alfil("negro", "alfil", '♝');
+        tablero[7][2] = new Alfil("blanco", "alfil", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Bishop.png").getImage());
+        tablero[7][5] = new Alfil("blanco", "alfil", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Bishop.png").getImage());
+        tablero[0][2] = new Alfil("negro", "alfil", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Bishop.png").getImage());
+        tablero[0][5] = new Alfil("negro", "alfil", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Bishop.png").getImage());
 
         // Reina y Rey
-        tablero[7][3] = new Reina("blanco", "reina", '♕');
-        tablero[7][4] = new Rey("blanco", "rey", '♔');
-        tablero[0][3] = new Reina("negro", "reina", '♛');
-        tablero[0][4] = new Rey("negro", "rey", '♚');
+        tablero[7][3] = new Reina("blanco", "reina", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_Queen.png").getImage());
+        tablero[7][4] = new Rey("blanco", "rey", new ImageIcon("pixel chess_v1.2/16x32 pieces/W_King.png").getImage());
+        tablero[0][3] = new Reina("negro", "reina", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_Queen.png").getImage());
+        tablero[0][4] = new Rey("negro", "rey", new ImageIcon("pixel chess_v1.2/16x32 pieces/B_King.png").getImage());
     }
 
     // ---------------------------------------------------------

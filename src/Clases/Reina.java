@@ -1,9 +1,10 @@
 package Clases;
+import java.awt.Image;
 
 public class Reina extends Ficha {
 
-    public Reina(String color, String tipo, char simbolo) {
-        super(color, tipo, simbolo);
+    public Reina(String color, String tipo, Image icono) {
+        super(color, tipo, icono);
     }
 
     @Override

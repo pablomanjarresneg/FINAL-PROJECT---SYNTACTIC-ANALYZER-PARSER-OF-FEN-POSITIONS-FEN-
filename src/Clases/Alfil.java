@@ -1,9 +1,10 @@
 package Clases;
+import java.awt.Image;
 
 public class Alfil extends Ficha {
 
-    public Alfil(String color, String tipo, char simbolo) {
-        super(color, tipo, simbolo);
+    public Alfil(String color, String tipo, Image icono) {
+        super(color, tipo, icono);
     }
 
     @Override

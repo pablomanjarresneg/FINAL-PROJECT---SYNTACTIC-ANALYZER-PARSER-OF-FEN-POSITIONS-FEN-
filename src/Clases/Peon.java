@@ -1,9 +1,10 @@
 package Clases;
+import java.awt.Image;
 
 public class Peon extends Ficha {
 
-    public Peon(String color, String tipo, char simbolo) {
-        super(color, tipo, simbolo);
+    public Peon(String color, String tipo, Image icono) {
+        super(color, tipo, icono);
     }
 
     @Override

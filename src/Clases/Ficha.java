@@ -1,15 +1,17 @@
 package Clases;
 
+import java.awt.Image;
+
 public abstract class Ficha {
     protected String color;     // "blanco" o "negro"
     protected String tipo;      // "peon", "torre", etc.
-    protected char simbolo;     // símbolo unicode (♙, ♜, etc.)
+    protected Image icono;     // símbolo unicode (♙, ♜, etc.)
     protected String posicion;  // opcional, por si quieres guardar "e4"
 
-    public Ficha(String color, String tipo, char simbolo) {
+    public Ficha(String color, String tipo, Image icono) {
         this.color = color;
         this.tipo = tipo;
-        this.simbolo = simbolo;
+        this.icono = icono;
     }
 
     public String getColor() {
@@ -20,8 +22,8 @@ public abstract class Ficha {
         return tipo;
     }
 
-    public char getSimbolo() {
-        return simbolo;
+    public Image getIcono() {
+        return icono;
     }
 
     public String getPosicion() {

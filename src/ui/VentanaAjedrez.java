@@ -59,7 +59,9 @@ public class VentanaAjedrez extends JFrame  {
                     casillas[filaTablero][columnaTablero].setFocusable(false);
                     casillas[filaTablero][columnaTablero].setFont(new Font("Arial Unicode MS", Font.PLAIN, 38));
                     casillas[filaTablero][columnaTablero].setPreferredSize(new Dimension(80, 80));
-
+                    
+                    casillas[filaTablero][columnaTablero].setMargin(new Insets(0, 0, 0, 0));
+                    casillas[filaTablero][columnaTablero].setBorderPainted(false);
                     Color color = (filaTablero + columnaTablero) % 2 == 0 ? Color.WHITE : new Color(46, 139, 87);
 
                     casillas[filaTablero][columnaTablero].setBackground(color);
@@ -138,15 +140,12 @@ public class VentanaAjedrez extends JFrame  {
     }
     private void cargarPartida(String nombreArchivo) {
         String rutaCompleta = "partidas/" + nombreArchivo + ".bnf";
-        
-        // Load movements from file
         List<String> movimientosCargados = codificador.cargarPartidaBNF(rutaCompleta);
         
         if (movimientosCargados.isEmpty()) {
             JOptionPane.showMessageDialog(this, "No se pudieron cargar movimientos del archivo.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
         // Reset board to initial position
         tablero = new Tablero(); // Reset to initial state
         esTurnoBlancas = true;   // Reset turn to white
@@ -183,18 +182,46 @@ public class VentanaAjedrez extends JFrame  {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(tableroFichas[i][j] != null) {
-                    casillas[i][j].setText(String.valueOf(tableroFichas[i][j].getSimbolo()));
+                    Image icono = cargarIconoFicha(tableroFichas[i][j]);
+                    if (icono != null) {
+                        casillas[i][j].setIcon(new ImageIcon(icono));
+                        casillas[i][j].setText(""); // Clear text when using icon
+                    } else {
+                        // Fallback to Unicode symbols if image loading fails
+                        casillas[i][j].setIcon(null);
+                    }
                 } else {
                     casillas[i][j].setText("");
+                    casillas[i][j].setIcon(null);
                 }
             }
         }
     }
 
+    
 
     private void cambiarTurno() {
         esTurnoBlancas = !esTurnoBlancas;
         actualizarTituloTurno();
+    }
+    private Image cargarIconoFicha(Ficha ficha) {
+        String rutaBase = "src/public/pieces/";
+        String color = ficha.getColor().equals("blanco") ? "W_" : "B_";
+        String tipo = switch (ficha.getTipo()) {
+            case "peon" -> "Pawn";
+            case "torre" -> "Rook";
+            case "caballo" -> "Knight";
+            case "alfil" -> "Bishop";
+            case "reina" -> "Queen";
+            case "rey" -> "King";
+            default -> "";
+        };
+
+        String rutaArchivo = rutaBase + color + tipo + ".png";
+        ImageIcon originalIcon = new ImageIcon(rutaArchivo);
+        Image scaledImage = originalIcon.getImage().getScaledInstance(45,80,Image.SCALE_SMOOTH);
+        
+        return scaledImage;
     }
 
     private void procesarMovimiento(JTextField campo, boolean esBlanca) {
