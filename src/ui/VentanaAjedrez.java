@@ -9,10 +9,9 @@ import javax.swing.*;
 public class VentanaAjedrez extends JFrame {
     private final Tablero tablero;
     private JButton[][] casillas;
-    private JTextField areaMovimientosBlancas;
-    private JTextField areaMovimientosNegras;
+    private JTextField areaMovimientos;
     private final Codificador codificador;
-    
+    private boolean esTurnoBlancas = true;
     public VentanaAjedrez() {
         tablero = new Tablero();
         codificador = new Codificador();
@@ -63,31 +62,24 @@ public class VentanaAjedrez extends JFrame {
             }
         }
         // Crear panel para movimientos
-        JPanel panelMovimientos = new JPanel(new BorderLayout());
-        panelMovimientos.setPreferredSize(new Dimension(600, 50));
+        JPanel panelMovimientos = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panelMovimientos.setMaximumSize(new Dimension(350, 30));
+        panelMovimientos.setAlignmentX(CENTER_ALIGNMENT);
         panelMovimientos.setBackground(Color.LIGHT_GRAY);
         panelMovimientos.setBorder(BorderFactory.createTitledBorder("Movimientos"));
 
-        // Área de texto para movimientos de las blancas
-        areaMovimientosBlancas = new JTextField(20);
-        areaMovimientosBlancas.setEditable(true);
-        areaMovimientosBlancas.setFont(new Font("Arial", Font.PLAIN, 14));
-        areaMovimientosBlancas.addActionListener(e -> {
-            procesarMovimiento(areaMovimientosBlancas, true);
+        // Área de texto para movimientos
+        areaMovimientos = new JTextField(25);
+        areaMovimientos.setEditable(true);
+        areaMovimientos.setFont(new Font("Arial", Font.PLAIN, 14));
+        areaMovimientos.addActionListener(e -> {
+            procesarMovimiento(areaMovimientos, esTurnoBlancas);
         });
-        SwingUtilities.invokeLater(() -> areaMovimientosBlancas.requestFocus());
+        SwingUtilities.invokeLater(() -> areaMovimientos.requestFocus());
 
-        // Área de texto para movimientos de las negras
-        areaMovimientosNegras = new JTextField(20);
-        areaMovimientosNegras.setEditable(true);
-        areaMovimientosNegras.setFont(new Font("Arial", Font.PLAIN, 14));
-        areaMovimientosBlancas.setEditable(false);
-        areaMovimientosNegras.addActionListener(e -> {
-            procesarMovimiento(areaMovimientosNegras, false);
-        });
+        
 
-        panelMovimientos.add(areaMovimientosBlancas, BorderLayout.EAST);
-        panelMovimientos.add(areaMovimientosNegras, BorderLayout.WEST);
+        panelMovimientos.add(areaMovimientos, BorderLayout.PAGE_END);
 
         JPanel guardarYCargarPanel = new JPanel();
         guardarYCargarPanel.setMaximumSize(new Dimension(20,20));
@@ -122,8 +114,6 @@ public class VentanaAjedrez extends JFrame {
 
     private void cambiarTurno() {
         codificador.limpiarMovimientos();
-        areaMovimientosBlancas.setEditable(!areaMovimientosBlancas.isEditable());
-        areaMovimientosNegras.setEditable(!areaMovimientosNegras.isEditable());
     }
 
     private void procesarMovimiento(JTextField campo, boolean esBlanca) {
@@ -135,8 +125,9 @@ public class VentanaAjedrez extends JFrame {
             campo.setText("");
             return;
         }
-        boolean aplicado = intentarAplicarMovimiento(movimiento, esBlanca);
+        boolean aplicado = intentarAplicarMovimiento(movimiento, !esBlanca);
         codificador.limpiarMovimientos();
+
         if (aplicado) {
             campo.setText("");
             actualizarTablero();
@@ -155,10 +146,14 @@ public class VentanaAjedrez extends JFrame {
             return false;
         }
         boolean exito = tablero.mover(origen, destino);
+
         if (exito) {
             codificador.registrarMovimiento(movimiento);
+            esTurnoBlancas = !esTurnoBlancas;
+            return true;
         }
-        return true;
+
+        return false;
     }
     
     public static void main(String[] args) {
