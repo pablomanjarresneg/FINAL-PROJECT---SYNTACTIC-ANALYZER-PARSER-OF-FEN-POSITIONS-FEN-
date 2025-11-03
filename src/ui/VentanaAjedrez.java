@@ -33,16 +33,18 @@ public class VentanaAjedrez extends JFrame  {
             for (int j = 0; j < 9; j++) {
                 if (i == 0 && j == 0) {
                     JButton esquinaVacia = new JButton();
-                    esquinaVacia.setBackground(Color.DARK_GRAY);
+                    esquinaVacia.setBackground(new Color(238, 238, 238));
                     esquinaVacia.setSize(new Dimension(50,50));
                     esquinaVacia.setBorderPainted(false);
+                    esquinaVacia.setFocusPainted(false);
                     panelTablero.add(esquinaVacia);
                 } else if (i == 0) {
                     // Fila superior (etiquetas de columnas)
                     JButton etiqueta = new JButton(String.valueOf((char)('A' + j - 1)));
                     etiqueta.setSize(new Dimension(50, 50));
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
-                    etiqueta.setBackground(new Color(139, 69, 19));
+                    etiqueta.setBackground(new Color(238, 238, 238));
+                    etiqueta.setFocusPainted(false);
                     etiqueta.setBorderPainted(false);
                     panelTablero.add(etiqueta);
                 } else if (j == 0) {
@@ -50,7 +52,8 @@ public class VentanaAjedrez extends JFrame  {
                     JButton etiqueta = new JButton(String.valueOf(9 - i));
                     etiqueta.setSize(new Dimension(50, 50));
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
-                    etiqueta.setBackground(new Color(139, 69, 19));
+                    etiqueta.setBackground(new Color(238, 238, 238));
+                    etiqueta.setFocusPainted(false);
                     etiqueta.setBorderPainted(false);
                     panelTablero.add(etiqueta);
                 } else { 
@@ -124,16 +127,26 @@ public class VentanaAjedrez extends JFrame  {
         JButton botonCargar = new JButton("Cargar");
         botonCargar.setFocusPainted(false);
         botonCargar.addActionListener(e -> {
-        String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo a cargar:", "Cargar Partida", JOptionPane.PLAIN_MESSAGE);
-        if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        nombreArchivo = nombreArchivo.trim();
-        cargarPartida(nombreArchivo);
-    });
-    guardarYCargarPanel.add(botonGuardar);
-    guardarYCargarPanel.add(botonCargar);
+            String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo a cargar:", "Cargar Partida", JOptionPane.PLAIN_MESSAGE);
+            if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            nombreArchivo = nombreArchivo.trim();
+            cargarPartida(nombreArchivo);
+        });
+        JButton botonReiniciar = new JButton("Reiniciar");
+        botonReiniciar.setFocusPainted(false);
+        botonReiniciar.addActionListener( e -> {
+            tablero = new Tablero();
+            esTurnoBlancas = true;
+            codificador.limpiarMovimientos();
+            actualizarTablero();
+            actualizarTituloTurno();
+        });
+        guardarYCargarPanel.add(botonGuardar);
+        guardarYCargarPanel.add(botonCargar);
+        guardarYCargarPanel.add(botonReiniciar);
 
         add(guardarYCargarPanel, BorderLayout.NORTH);
         add(panelTablero, BorderLayout.CENTER);
@@ -261,17 +274,31 @@ public class VentanaAjedrez extends JFrame  {
 
         if (exito) {
             codificador.registrarMovimiento(movimiento);
-            ganador(esBlanca ? "blanco" : "negro");
+            
+            // Check checkmate for the OPPONENT after the move is made
+            String colorOponente = esBlanca ? "negro" : "blanco";
+            
+            if (tablero.esJaqueMate(colorOponente)) {
+                // The current player (who just moved) wins
+                String ganadorColor = esBlanca ? "blancas" : "negras";
+                JOptionPane.showMessageDialog(this, 
+                    "¡Jaque Mate! Las " + ganadorColor + " han ganado!", 
+                    "Juego Terminado", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            } else if (tablero.esJaque(colorOponente)) {
+                // Just check, not mate
+                JOptionPane.showMessageDialog(this, 
+                    "¡Jaque!", 
+                    "Advertencia", 
+                    JOptionPane.WARNING_MESSAGE);
+            }
+            
             return true;
         }
 
         return false;
     }
-    private void ganador(String color) {
-        if(tablero.esJaqueMate(color)) {
-            JOptionPane.showMessageDialog(this, "¡Las " + color + " han ganado!", "Juego Terminado", JOptionPane.INFORMATION_MESSAGE);
-        } 
-    }
+
     private void actualizarTituloTurno() {
         String tituloTurno = esTurnoBlancas ? "Turno de las Blancas" : "Turno de las Negras";
         
