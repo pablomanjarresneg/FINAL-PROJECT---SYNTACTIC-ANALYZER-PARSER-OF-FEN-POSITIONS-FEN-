@@ -152,6 +152,64 @@ public class VentanaAjedrez extends JFrame  {
         guardarYCargarPanel.add(botonGuardar);
         guardarYCargarPanel.add(botonCargar);
         guardarYCargarPanel.add(botonReiniciar);
+        
+        // Botón para volver al menú principal (ofrece guardar si hay cambios)
+        JButton botonVolverMenu = new JButton("Volver al Menú");
+        botonVolverMenu.setFocusPainted(false);
+        botonVolverMenu.addActionListener(e -> {
+            // Si no hay movimientos registrados, volver directamente
+            if (codificador.getMovimientos().isEmpty()) {
+                Menu menu = new Menu();
+                menu.setVisible(true);
+                dispose();
+                return;
+            }
+
+            // Mostrar opciones: Guardar / No guardar / Cancelar
+            Object[] opciones = {"Guardar", "No guardar", "Cancelar"};
+            int seleccion = JOptionPane.showOptionDialog(
+                    this,
+                    "Hay cambios no guardados. ¿Qué desea hacer?",
+                    "Guardar cambios",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.WARNING_MESSAGE,
+                    null,
+                    opciones,
+                    opciones[0]
+            );
+
+            if (seleccion == 0) { // Guardar
+                String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo para guardar la notación BNF:", "Guardar Partida", JOptionPane.PLAIN_MESSAGE);
+                if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Nombre de archivo inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                nombreArchivo = "partidas/" + nombreArchivo.trim() + ".bnf";
+
+                if (codificador.archivoExiste(nombreArchivo)) {
+                    int sobre = JOptionPane.showConfirmDialog(this, "El archivo ya existe. ¿Desea sobrescribirlo?", "Confirmar sobrescritura", JOptionPane.YES_NO_OPTION);
+                    if (sobre != JOptionPane.YES_OPTION) {
+                        // No sobrescribir — cancelar la acción de volver
+                        return;
+                    }
+                }
+
+                codificador.guardarPartidaBNF(nombreArchivo);
+                JOptionPane.showMessageDialog(this, "Partida guardada exitosamente.", "Guardar Partida", JOptionPane.INFORMATION_MESSAGE);
+
+                Menu menu = new Menu();
+                menu.setVisible(true);
+                dispose();
+            } else if (seleccion == 1) { // No guardar
+                Menu menu = new Menu();
+                menu.setVisible(true);
+                dispose();
+            } else {
+                // Cancelar -> no hacer nada
+            }
+        });
+
+        guardarYCargarPanel.add(botonVolverMenu);
 
         add(guardarYCargarPanel, BorderLayout.NORTH);
         add(panelTablero, BorderLayout.CENTER);
@@ -221,12 +279,30 @@ public class VentanaAjedrez extends JFrame  {
     }
 
     protected boolean cargarPartidaDesdeFEN(String fen) {
+        if (fen == null || fen.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Entrada FEN inválida.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // Validar FEN usando el codificador
+        if (!codificador.validarFEN(fen)) {
+            JOptionPane.showMessageDialog(this, "La cadena FEN no es válida.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
         tablero = new Tablero();
         boolean exito = tablero.cargarDesdeFEN(fen);
 
         if (exito) {
+            // Determinar turno a partir del segundo campo del FEN (w o b)
+            String[] partes = fen.trim().split(" ");
+            if (partes.length >= 2) {
+                esTurnoBlancas = "w".equalsIgnoreCase(partes[1]);
+            } else {
+                esTurnoBlancas = true; // default
+            }
+
             actualizarTablero();
-            esTurnoBlancas = true;
             actualizarTituloTurno();
             codificador.limpiarMovimientos(); // Clear previous moves
             JOptionPane.showMessageDialog(this, "Partida cargada exitosamente desde FEN.", "Cargar Partida", JOptionPane.INFORMATION_MESSAGE);

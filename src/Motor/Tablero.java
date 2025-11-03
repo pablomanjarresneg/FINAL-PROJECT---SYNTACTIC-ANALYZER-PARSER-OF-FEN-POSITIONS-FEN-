@@ -202,4 +202,81 @@ public class Tablero {
 
         return !tieneMovimientosLegales(color);
     }
+
+    // ---------------------------------------------------------
+    // Carga un tablero a partir de una cadena FEN simple
+    // Solo interpreta la sección de piezas y coloca las fichas
+    // Devuelve true si el FEN tiene una estructura válida y se cargó correctamente
+    // ---------------------------------------------------------
+    public boolean cargarDesdeFEN(String fen) {
+        if (fen == null) return false;
+        String[] partes = fen.trim().split(" ");
+        if (partes.length < 1) return false;
+
+        String piezas = partes[0];
+        String[] filas = piezas.split("/");
+        if (filas.length != 8) return false;
+
+        // validar suma de casillas por fila
+        for (String fila : filas) {
+            int suma = 0;
+            for (char c : fila.toCharArray()) {
+                if (Character.isDigit(c)) {
+                    suma += Character.getNumericValue(c);
+                } else if ("prnbqkPRNBQK".indexOf(c) != -1) {
+                    suma++;
+                } else {
+                    return false;
+                }
+            }
+            if (suma != 8) return false;
+        }
+
+        // limpiar tablero
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                tablero[i][j] = null;
+            }
+        }
+
+        // Parsear filas: FEN va de la fila 8 (índice 0) a la fila 1 (índice 7)
+        for (int filaIdx = 0; filaIdx < 8; filaIdx++) {
+            String filaFen = filas[filaIdx];
+            int col = 0;
+            for (int k = 0; k < filaFen.length(); k++) {
+                char c = filaFen.charAt(k);
+                if (Character.isDigit(c)) {
+                    int vacantes = Character.getNumericValue(c);
+                    col += vacantes;
+                } else {
+                    String color = Character.isUpperCase(c) ? "blanco" : "negro";
+                    char letra = Character.toLowerCase(c);
+                    Clases.Ficha pieza = null;
+                    switch (letra) {
+                        case 'p' -> pieza = new Peon(color, "peon", null);
+                        case 'r' -> pieza = new Torre(color, "torre", null);
+                        case 'n' -> pieza = new Caballo(color, "caballo", null);
+                        case 'b' -> pieza = new Alfil(color, "alfil", null);
+                        case 'q' -> pieza = new Reina(color, "reina", null);
+                        case 'k' -> pieza = new Rey(color, "rey", null);
+                        default -> pieza = null;
+                    }
+
+                    if (pieza == null) return false; // carácter inválido
+
+                    // guardar posición como notación (ej. "e4")
+                    int filaMat = filaIdx; // 0..7 donde 0 es la fila 8 de FEN
+                    int colMat = col;     // 0..7
+                    char colLet = (char) ('a' + colMat);
+                    int numeroFila = 8 - filaMat;
+                    pieza.setPosicion(String.valueOf(colLet) + String.valueOf(numeroFila));
+                    tablero[filaMat][colMat] = pieza;
+                    col++;
+                }
+            }
+            if (col != 8) return false; // seguridad adicional
+        }
+
+        return true;
+    }
 }
