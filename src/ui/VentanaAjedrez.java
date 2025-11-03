@@ -33,22 +33,25 @@ public class VentanaAjedrez extends JFrame  {
             for (int j = 0; j < 9; j++) {
                 if (i == 0 && j == 0) {
                     JButton esquinaVacia = new JButton();
-                    esquinaVacia.setBackground(Color.WHITE);
+                    esquinaVacia.setBackground(Color.DARK_GRAY);
                     esquinaVacia.setSize(new Dimension(50,50));
+                    esquinaVacia.setBorderPainted(false);
                     panelTablero.add(esquinaVacia);
                 } else if (i == 0) {
                     // Fila superior (etiquetas de columnas)
                     JButton etiqueta = new JButton(String.valueOf((char)('A' + j - 1)));
                     etiqueta.setSize(new Dimension(50, 50));
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
-                    etiqueta.setBackground(Color.WHITE);
+                    etiqueta.setBackground(new Color(139, 69, 19));
+                    etiqueta.setBorderPainted(false);
                     panelTablero.add(etiqueta);
                 } else if (j == 0) {
                     // Columna izquierda (etiquetas de filas)
                     JButton etiqueta = new JButton(String.valueOf(9 - i));
                     etiqueta.setSize(new Dimension(50, 50));
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
-                    etiqueta.setBackground(Color.WHITE);
+                    etiqueta.setBackground(new Color(139, 69, 19));
+                    etiqueta.setBorderPainted(false);
                     panelTablero.add(etiqueta);
                 } else { 
                     int filaTablero = i - 1;
@@ -62,7 +65,7 @@ public class VentanaAjedrez extends JFrame  {
                     
                     casillas[filaTablero][columnaTablero].setMargin(new Insets(0, 0, 0, 0));
                     casillas[filaTablero][columnaTablero].setBorderPainted(false);
-                    Color color = (filaTablero + columnaTablero) % 2 == 0 ? Color.WHITE : new Color(46, 139, 87);
+                    Color color = (filaTablero + columnaTablero) % 2 == 0 ? new Color(222, 184, 135) : new Color(139, 69, 19);
 
                     casillas[filaTablero][columnaTablero].setBackground(color);
                     panelTablero.add(casillas[filaTablero][columnaTablero]);
@@ -219,7 +222,7 @@ public class VentanaAjedrez extends JFrame  {
 
         String rutaArchivo = rutaBase + color + tipo + ".png";
         ImageIcon originalIcon = new ImageIcon(rutaArchivo);
-        Image scaledImage = originalIcon.getImage().getScaledInstance(45,80,Image.SCALE_SMOOTH);
+        Image scaledImage = originalIcon.getImage().getScaledInstance(32, 64, Image.SCALE_SMOOTH);
         
         return scaledImage;
     }
