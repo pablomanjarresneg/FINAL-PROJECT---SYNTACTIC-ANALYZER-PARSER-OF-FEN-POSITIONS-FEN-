@@ -113,6 +113,17 @@ public class VentanaAjedrez extends JFrame  {
 
         JButton botonGuardar = new JButton("Guardar");
         botonGuardar.setFocusPainted(false);
+        botonGuardar.setBackground(Color.lightGray);
+        botonGuardar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonGuardar.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "",
+                TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION
+            ),
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
         botonGuardar.addActionListener( e -> {
             String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo para guardar la notación BNF:", "Guardar Partida", JOptionPane.PLAIN_MESSAGE);
             if (nombreArchivo != null && !nombreArchivo.trim().isEmpty()) {
@@ -131,6 +142,17 @@ public class VentanaAjedrez extends JFrame  {
 
         JButton botonCargar = new JButton("Cargar");
         botonCargar.setFocusPainted(false);
+        botonCargar.setBackground(Color.lightGray);
+        botonCargar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonCargar.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "",
+                TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION
+            ),
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
         botonCargar.addActionListener(e -> {
             String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo a cargar:", "Cargar Partida", JOptionPane.PLAIN_MESSAGE);
             if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
@@ -142,6 +164,17 @@ public class VentanaAjedrez extends JFrame  {
         });
         JButton botonReiniciar = new JButton("Reiniciar");
         botonReiniciar.setFocusPainted(false);
+        botonReiniciar.setBackground(Color.lightGray);
+        botonReiniciar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonReiniciar.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "",
+                TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION
+            ),
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
         botonReiniciar.addActionListener( e -> {
             tablero = new Tablero();
             esTurnoBlancas = true;
