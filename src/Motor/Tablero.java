@@ -137,6 +137,44 @@ public class Tablero {
         return null; // Rey no encontrado
     }
 
+    private boolean tieneMovimientosLegales(String color) {
+        for (int filaOrigen = 0; filaOrigen < 8; filaOrigen++) {
+            for (int colOrigen = 0; colOrigen < 8; colOrigen++) {
+                Ficha ficha = tablero[filaOrigen][colOrigen];
+                if (ficha != null && ficha.getColor().equals(color)) {
+                    for (int filaDestino = 0; filaDestino < 8; filaDestino++) {
+                        for (int colDestino = 0; colDestino < 8; colDestino++) {
+                            if (ficha.movimientoValido(filaOrigen, colOrigen, filaDestino, colDestino, tablero)) {
+                                if (filaOrigen == filaDestino && colOrigen == colDestino) {
+                                    continue;
+                                }
+                            
+                                // Check if this move is valid for the piece
+                                if (ficha.movimientoValido(filaOrigen, colOrigen, filaDestino, colDestino, tablero)) {
+                                    Ficha fichaCapturada = tablero[filaDestino][colDestino];
+                                    tablero[filaDestino][colDestino] = ficha;
+                                    tablero[filaOrigen][colOrigen] = null;
+                                    
+                                    // Check if the king is still in check after this move
+                                    boolean enJaque = esJaque(color);
+                                    
+                                    // Undo the move
+                                    tablero[filaOrigen][colOrigen] = ficha;
+                                    tablero[filaDestino][colDestino] = fichaCapturada;
+
+                                    if (!enJaque) {
+                                        return true; // Hay al menos un movimiento legal
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false; // No hay movimientos legales
+    }
+
     public boolean esJaque(String color) {
         int[] posicionRey = encontrarRey(color);
         if (!hayRey(color)) {
@@ -158,8 +196,10 @@ public class Tablero {
     }
 
     public boolean esJaqueMate(String color) {
-        
+        if (!esJaque(color)) {
+            return false; 
+        }
 
-        return true;
+        return !tieneMovimientosLegales(color);
     }
 }
