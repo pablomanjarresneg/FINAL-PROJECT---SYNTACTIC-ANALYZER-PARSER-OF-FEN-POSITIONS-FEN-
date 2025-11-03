@@ -207,6 +207,7 @@ public class VentanaAjedrez extends JFrame  {
         esTurnoBlancas = !esTurnoBlancas;
         actualizarTituloTurno();
     }
+
     private Image cargarIconoFicha(Ficha ficha) {
         String rutaBase = "src/public/pieces/";
         String color = ficha.getColor().equals("blanco") ? "W_" : "B_";
@@ -260,12 +261,17 @@ public class VentanaAjedrez extends JFrame  {
 
         if (exito) {
             codificador.registrarMovimiento(movimiento);
+            ganador(esBlanca ? "blanco" : "negro");
             return true;
         }
 
         return false;
     }
-
+    private void ganador(String color) {
+        if(tablero.esJaqueMate(color)) {
+            JOptionPane.showMessageDialog(this, "¡Las " + color + " han ganado!", "Juego Terminado", JOptionPane.INFORMATION_MESSAGE);
+        } 
+    }
     private void actualizarTituloTurno() {
         String tituloTurno = esTurnoBlancas ? "Turno de las Blancas" : "Turno de las Negras";
         

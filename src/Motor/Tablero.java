@@ -113,5 +113,53 @@ public class Tablero {
         }
         return (esBlanca && ficha.getColor().equals("blanco")) || (!esBlanca && ficha.getColor().equals("negro"));
     }
-    
+    public boolean hayRey(String color) {
+        for (int fila = 0; fila < 8; fila++) {
+            for (int col = 0; col < 8; col++) {
+                Ficha ficha = tablero[fila][col];
+                if (ficha != null && ficha.getTipo().equals("rey") && ficha.getColor().equals(color)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private int[] encontrarRey(String color) {
+        for (int fila = 0; fila < 8; fila++) {
+            for (int col = 0; col < 8; col++) {
+                Ficha ficha = tablero[fila][col];
+                if (ficha != null && ficha.getTipo().equals("rey") && ficha.getColor().equals(color)) {
+                    return new int[]{fila, col};
+                }
+            }
+        }
+        return null; // Rey no encontrado
+    }
+
+    public boolean esJaque(String color) {
+        int[] posicionRey = encontrarRey(color);
+        if (!hayRey(color)) {
+            return false; // El rey no está en el tablero
+        }
+        int filaRey = posicionRey[0];
+        int colRey = posicionRey[1];
+        String colorOponente = color.equals("blanco") ? "negro" : "blanco";
+
+        for (int fila = 0; fila < 8; fila++) {
+            for (int col = 0; col < 8; col++) {
+                Ficha ficha = tablero[fila][col];
+                if (ficha != null && ficha.getColor().equals(colorOponente) && ficha.movimientoValido(fila, col, filaRey, colRey, tablero)) {
+                    return true; 
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean esJaqueMate(String color) {
+        
+
+        return true;
+    }
 }
