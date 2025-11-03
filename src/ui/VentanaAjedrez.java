@@ -219,15 +219,8 @@ public class VentanaAjedrez extends JFrame  {
             }
         }
     }
-
-    protected boolean cargarPartidaDesdeFEN(String fen) {
-        tablero = new Tablero();
-        boolean exito = codificador.validarFEN(fen);
-
-        if (exito) {
-            List<String> filas = codificador.cargarDesdeFEN(fen);
-            
-            Ficha[][] nuevoTablero = new Ficha[8][8];
+    private Ficha[][] cargarTableroFEN(List<String> filas) {
+        Ficha[][] nuevoTablero = new Ficha[8][8];
             for (int fila = 0; fila < 8; fila++) {
                 String filaFEN = filas.get(fila);
                 int col = 0;
@@ -264,7 +257,16 @@ public class VentanaAjedrez extends JFrame  {
                         col++;
                     }
                 }
-            }
+            }   
+        return nuevoTablero;
+    }
+    protected boolean cargarPartidaDesdeFEN(String fen) {
+        tablero = new Tablero();
+        boolean exito = codificador.validarFEN(fen);
+
+        if (exito) {
+            List<String> filas = codificador.cargarDesdeFEN(fen);
+            Ficha[][] nuevoTablero = cargarTableroFEN(filas);
             tablero.setTablero(nuevoTablero);
 
             actualizarTablero();
