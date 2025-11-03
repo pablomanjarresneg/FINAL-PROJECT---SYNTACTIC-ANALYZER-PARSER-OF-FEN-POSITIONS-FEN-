@@ -2,14 +2,17 @@ package ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.GridLayout;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 public class Menu extends JFrame {
 
     public Menu() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(500, 500); // Increased height for 4 buttons
         setVisible(true);
+        setResizable(false);
 
         JPanel panel = new JPanel(new BorderLayout(15, 15));
         panel.setBorder(BorderFactory.createCompoundBorder(
@@ -19,15 +22,19 @@ public class Menu extends JFrame {
                 TitledBorder.CENTER,
                 TitledBorder.DEFAULT_POSITION
             ),
-            BorderFactory.createEmptyBorder(20, 50, 20, 50)
+            BorderFactory.createEmptyBorder(20, 20, 20, 20)
         ));
-        panel.setBackground(panel.getBackground().brighter());
         panel.setBackground(Color.white);        
         add(panel, BorderLayout.CENTER);
+
+        // Create a button panel with GridLayout for all 4 buttons
+        JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+        buttonPanel.setBackground(Color.white);
 
         JButton startButton = new JButton("Iniciar Nueva Partida");
         startButton.setFocusPainted(false);
         startButton.setBackground(Color.lightGray);
+        startButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         startButton.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(),
@@ -35,19 +42,18 @@ public class Menu extends JFrame {
                 TitledBorder.CENTER,
                 TitledBorder.DEFAULT_POSITION
             ),
-            BorderFactory.createEmptyBorder(20, 50, 20, 50)
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
         ));
         startButton.addActionListener(e -> {
             VentanaAjedrez ventana = new VentanaAjedrez();
             ventana.setVisible(true);
             dispose();
         });
-   
-        panel.add(startButton, BorderLayout.CENTER);
-        
+
         JButton loadButton = new JButton("Cargar Partida");
         loadButton.setFocusPainted(false);
         loadButton.setBackground(Color.lightGray);
+        loadButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         loadButton.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(),
@@ -55,10 +61,8 @@ public class Menu extends JFrame {
                 TitledBorder.CENTER,
                 TitledBorder.DEFAULT_POSITION
             ),
-            BorderFactory.createEmptyBorder(20, 50, 20, 50)
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
         ));
-
-        
         loadButton.addActionListener(e -> {
             VentanaAjedrez ventana = new VentanaAjedrez();
             String nombreArchivo = JOptionPane.showInputDialog(this, "Ingrese nombre del archivo a cargar:", "Cargar Partida", JOptionPane.PLAIN_MESSAGE);
@@ -72,27 +76,10 @@ public class Menu extends JFrame {
             dispose();
         });
 
-        panel.add(loadButton, BorderLayout.NORTH);
-
-        JButton exitButton = new JButton("Salir");
-        exitButton.setFocusPainted(false);
-        exitButton.setBackground(Color.lightGray);
-        exitButton.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(),
-                "",
-                TitledBorder.CENTER,
-                TitledBorder.DEFAULT_POSITION
-            ),
-            BorderFactory.createEmptyBorder(20, 50, 20, 50)
-        ));
-        exitButton.addActionListener(e -> {
-            System.exit(0);
-        }); 
-
         JButton loadWithFEN = new JButton("Cargar Partida con FEN");
         loadWithFEN.setFocusPainted(false);
         loadWithFEN.setBackground(Color.lightGray);
+        loadWithFEN.setCursor(new Cursor(Cursor.HAND_CURSOR));
         loadWithFEN.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(),
@@ -100,7 +87,7 @@ public class Menu extends JFrame {
                 TitledBorder.CENTER,
                 TitledBorder.DEFAULT_POSITION
             ),
-            BorderFactory.createEmptyBorder(20, 50, 20, 50)
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
         ));
         loadWithFEN.addActionListener(e -> {
             VentanaAjedrez ventana = new VentanaAjedrez();
@@ -120,12 +107,36 @@ public class Menu extends JFrame {
             dispose();
         });
 
-        panel.add(loadWithFEN, BorderLayout.PAGE_START);
-        panel.add(exitButton , BorderLayout.SOUTH);
-        setVisible(true);
+        JButton exitButton = new JButton("Salir");
+        exitButton.setFocusPainted(false);
+        exitButton.setSelected(true);
+        exitButton.setBackground(Color.lightGray);
+        exitButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        exitButton.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "",
+                TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION
+            ),
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        exitButton.addActionListener(e -> {
+            System.exit(0);
+        });
+
+        // Add all buttons to the button panel
+        buttonPanel.add(startButton);
+        buttonPanel.add(loadButton);
+        buttonPanel.add(loadWithFEN);
+        buttonPanel.add(exitButton);
+
+        // Add the button panel to the center of the main panel
+        panel.add(buttonPanel, BorderLayout.CENTER);
+
         setLocationRelativeTo(null);
     }
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater( () -> {
             new Menu().setVisible(true);

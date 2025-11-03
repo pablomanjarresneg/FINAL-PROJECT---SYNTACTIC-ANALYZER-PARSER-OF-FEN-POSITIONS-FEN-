@@ -25,7 +25,7 @@ public class VentanaAjedrez extends JFrame  {
         setTitle("Tablero de Ajedrez");
         setSize(700, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        setResizable(false);
         JPanel panelTablero = new JPanel(new GridLayout(9,9));
         casillas = new JButton[8][8];
 
@@ -156,6 +156,7 @@ public class VentanaAjedrez extends JFrame  {
         add(guardarYCargarPanel, BorderLayout.NORTH);
         add(panelTablero, BorderLayout.CENTER);
         add(panelMovimientos, BorderLayout.SOUTH);
+        
         actualizarTablero();
         setLocationRelativeTo(null);
     }
@@ -222,7 +223,7 @@ public class VentanaAjedrez extends JFrame  {
     protected boolean cargarPartidaDesdeFEN(String fen) {
         tablero = new Tablero();
         boolean exito = tablero.cargarDesdeFEN(fen);
-        
+
         if (exito) {
             actualizarTablero();
             esTurnoBlancas = true;
