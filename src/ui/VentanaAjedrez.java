@@ -14,6 +14,7 @@ public class VentanaAjedrez extends JFrame  {
     private JTextField areaMovimientos;
     private final Codificador codificador;
     private boolean esTurnoBlancas = true;
+    private boolean juegoTerminado = false;
 
     public VentanaAjedrez() {
         tablero = new Tablero();
@@ -255,6 +256,7 @@ public class VentanaAjedrez extends JFrame  {
         if (todosAplicados) {
             actualizarTablero();
             actualizarTituloTurno();
+            
             JOptionPane.showMessageDialog(this, 
                 "Partida cargada exitosamente. " + movimientosCargados.size() + " movimientos aplicados.", 
                 "Cargar Partida", 
@@ -333,17 +335,55 @@ public class VentanaAjedrez extends JFrame  {
             Ficha[][] nuevoTablero = cargarTableroFEN(filas);
             tablero.setTablero(nuevoTablero);
 
+            // Update the board FIRST, then check game state
             actualizarTablero();
-
             esTurnoBlancas = true;
             actualizarTituloTurno();
-            codificador.limpiarMovimientos(); // Clear previous moves
-            JOptionPane.showMessageDialog(this, "Partida cargada exitosamente desde FEN.", "Cargar Partida", JOptionPane.INFORMATION_MESSAGE);
+            codificador.limpiarMovimientos();
+            
+            SwingUtilities.invokeLater(() -> {
+                Timer timer = new Timer(300, e -> {
+                    verificarEstadoJuego();
+                    JOptionPane.showMessageDialog(this, 
+                        "Partida cargada exitosamente desde FEN.", 
+                        "Cargar Partida", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                });
+                timer.setRepeats(false);
+                timer.start();
+            });
+            
         } else {
-            JOptionPane.showMessageDialog(this, "Error al cargar la partida desde la cadena FEN.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, 
+                "Error al cargar la partida desde la cadena FEN.", 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
 
         return exito;
+    }
+    
+    private void verificarEstadoJuego() {
+        String colorOponente = esTurnoBlancas ? "negro" : "blanco";
+        
+        if (tablero.esJaqueMate(colorOponente)) {
+            String ganadorColor = esTurnoBlancas ? "blancas" : "negras";
+            juegoTerminado = true;
+            areaMovimientos.setEditable(false); // Disable input
+            areaMovimientos.setBackground(Color.LIGHT_GRAY);
+            areaMovimientos.setText("JUEGO TERMINADO");
+            
+            JOptionPane.showMessageDialog(this, 
+                "¡Jaque Mate! Las " + ganadorColor + " han ganado!", 
+                "Juego Terminado", 
+                JOptionPane.INFORMATION_MESSAGE);
+                
+        } else if (tablero.esJaque(colorOponente)) {
+            JOptionPane.showMessageDialog(this, 
+                "¡Jaque!", 
+                "Advertencia", 
+                JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     protected void cambiarTurno() {
@@ -372,6 +412,13 @@ public class VentanaAjedrez extends JFrame  {
     }
 
     protected void procesarMovimiento(JTextField campo, boolean esBlanca) {
+
+        if (juegoTerminado) {
+            campo.setText("JUEGO TERMINADO");
+            campo.setEditable(false);
+            return;
+        }
+
         String movimiento = campo.getText().trim();
         if (movimiento.isEmpty()) return;
 
