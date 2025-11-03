@@ -154,7 +154,7 @@ public class VentanaAjedrez extends JFrame  {
         actualizarTablero();
         setLocationRelativeTo(null);
     }
-    private void cargarPartida(String nombreArchivo) {
+    protected void cargarPartida(String nombreArchivo) {
         String rutaCompleta = "partidas/" + nombreArchivo + ".bnf";
         List<String> movimientosCargados = codificador.cargarPartidaBNF(rutaCompleta);
         

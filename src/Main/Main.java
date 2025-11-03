@@ -1,8 +1,8 @@
 package Main;
-import ui.VentanaAjedrez;
+import ui.Menu;
 public class Main {
     public static void main(String[] args) {
-        VentanaAjedrez ventana = new VentanaAjedrez();
-        ventana.setVisible(true);
+        Menu menu = new Menu();
+        menu.setVisible(true);
     }
 }
