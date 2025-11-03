@@ -35,8 +35,9 @@ public class VentanaAjedrez extends JFrame  {
                     JButton esquinaVacia = new JButton();
                     esquinaVacia.setBackground(new Color(238, 238, 238));
                     esquinaVacia.setSize(new Dimension(50,50));
-                    esquinaVacia.setBorderPainted(false);
+                    esquinaVacia.setBorderPainted(true);
                     esquinaVacia.setFocusPainted(false);
+                    esquinaVacia.setBorder(BorderFactory.createRaisedBevelBorder());
                     panelTablero.add(esquinaVacia);
                 } else if (i == 0) {
                     // Fila superior (etiquetas de columnas)
@@ -45,7 +46,9 @@ public class VentanaAjedrez extends JFrame  {
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
                     etiqueta.setBackground(new Color(238, 238, 238));
                     etiqueta.setFocusPainted(false);
-                    etiqueta.setBorderPainted(false);
+                    etiqueta.setBorderPainted(true);
+                    etiqueta.setBorder(BorderFactory.createRaisedBevelBorder());
+                    
                     panelTablero.add(etiqueta);
                 } else if (j == 0) {
                     // Columna izquierda (etiquetas de filas)
@@ -54,7 +57,9 @@ public class VentanaAjedrez extends JFrame  {
                     etiqueta.setFont(new Font("Arial", Font.BOLD, 16));
                     etiqueta.setBackground(new Color(238, 238, 238));
                     etiqueta.setFocusPainted(false);
-                    etiqueta.setBorderPainted(false);
+                    etiqueta.setBorderPainted(true);
+                    etiqueta.setBorder(BorderFactory.createRaisedBevelBorder());
+                    
                     panelTablero.add(etiqueta);
                 } else { 
                     int filaTablero = i - 1;
@@ -65,15 +70,15 @@ public class VentanaAjedrez extends JFrame  {
                     casillas[filaTablero][columnaTablero].setFocusable(false);
                     casillas[filaTablero][columnaTablero].setFont(new Font("Arial Unicode MS", Font.PLAIN, 38));
                     casillas[filaTablero][columnaTablero].setPreferredSize(new Dimension(80, 80));
-                    
+                    casillas[filaTablero][columnaTablero].setSelected(false);
                     casillas[filaTablero][columnaTablero].setMargin(new Insets(0, 0, 0, 0));
-                    casillas[filaTablero][columnaTablero].setBorderPainted(false);
+                    casillas[filaTablero][columnaTablero].setBorderPainted(true);
+                    casillas[filaTablero][columnaTablero].setBorder(BorderFactory.createRaisedBevelBorder());
                     Color color = (filaTablero + columnaTablero) % 2 == 0 ? new Color(222, 184, 135) : new Color(139, 69, 19);
 
                     casillas[filaTablero][columnaTablero].setBackground(color);
                     panelTablero.add(casillas[filaTablero][columnaTablero]);
                 }
-
             }
         }
         // Crear panel para movimientos
