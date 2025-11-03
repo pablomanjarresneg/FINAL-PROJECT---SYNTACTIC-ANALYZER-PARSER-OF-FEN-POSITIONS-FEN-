@@ -75,7 +75,6 @@ public class Tablero {
 
         return new int[]{fila, col};
     }
-
     // ---------------------------------------------------------
     // Mueve una ficha si el movimiento es válido
     // ---------------------------------------------------------

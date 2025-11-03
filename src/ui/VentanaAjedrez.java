@@ -222,7 +222,7 @@ public class VentanaAjedrez extends JFrame  {
 
     protected boolean cargarPartidaDesdeFEN(String fen) {
         tablero = new Tablero();
-        boolean exito = tablero.cargarDesdeFEN(fen);
+        boolean exito = codificador.validarFEN(fen);
 
         if (exito) {
             actualizarTablero();

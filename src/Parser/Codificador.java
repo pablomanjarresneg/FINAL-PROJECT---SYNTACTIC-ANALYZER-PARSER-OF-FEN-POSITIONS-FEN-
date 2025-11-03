@@ -102,6 +102,7 @@ public class Codificador {
             System.out.println("El archivo " + nombreArchivo + " ya existe. No se sobrescribirá.");
         }
     }
+
     public ArrayList<String> cargarPartidaBNF(String nombreArchivo) {
         ArrayList<String> movimientosCargados = new ArrayList<>();
         try {
