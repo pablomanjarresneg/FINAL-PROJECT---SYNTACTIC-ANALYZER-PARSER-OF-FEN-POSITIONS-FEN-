@@ -138,11 +138,8 @@ public class VentanaAjedrez extends JFrame  {
         JButton botonReiniciar = new JButton("Reiniciar");
         botonReiniciar.setFocusPainted(false);
         botonReiniciar.addActionListener( e -> {
-            tablero = new Tablero();
-            esTurnoBlancas = true;
+            reiniciarTablero();
             codificador.limpiarMovimientos();
-            actualizarTablero();
-            actualizarTituloTurno();
         });
         guardarYCargarPanel.add(botonGuardar);
         guardarYCargarPanel.add(botonCargar);
@@ -154,7 +151,7 @@ public class VentanaAjedrez extends JFrame  {
         actualizarTablero();
         setLocationRelativeTo(null);
     }
-    protected void cargarPartida(String nombreArchivo) {
+    private void cargarPartida(String nombreArchivo) {
         String rutaCompleta = "partidas/" + nombreArchivo + ".bnf";
         List<String> movimientosCargados = codificador.cargarPartidaBNF(rutaCompleta);
         
@@ -163,11 +160,14 @@ public class VentanaAjedrez extends JFrame  {
             return;
         }
         // Reset board to initial position
-        tablero = new Tablero(); // Reset to initial state
-        esTurnoBlancas = true;   // Reset turn to white
+        reiniciarTablero();
         
         // Apply each movement to the board
         boolean todosAplicados = true;
+        for (String movimiento : movimientosCargados) {
+            if (movimiento.length() == 4) { // e2e4 format
+                String origen = movimiento.substring(0, 2);
+        boolean todosMovimientosValidos = true;
         for (String movimiento : movimientosCargados) {
             if (movimiento.length() == 4) { // e2e4 format
                 String origen = movimiento.substring(0, 2);
@@ -175,14 +175,18 @@ public class VentanaAjedrez extends JFrame  {
                 
                 if (!tablero.mover(origen, destino)) {
                     System.err.println("Error aplicando movimiento: " + movimiento);
-                    todosAplicados = false;
+                    JOptionPane.showMessageDialog(this, 
+                        "Error aplicando el movimiento: " + movimiento, 
+                        "Error al cargar partida", 
+                        JOptionPane.ERROR_MESSAGE);
+                    todosMovimientosValidos = false;
                     break;
                 }
                 esTurnoBlancas = !esTurnoBlancas; // Alternate turns
             }
         }
         
-        if (todosAplicados) {
+        if (todosMovimientosValidos) {
             actualizarTablero();
             actualizarTituloTurno();
             JOptionPane.showMessageDialog(this, 
@@ -192,10 +196,6 @@ public class VentanaAjedrez extends JFrame  {
         } else {
             JOptionPane.showMessageDialog(this, "Error al aplicar algunos movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-    private void actualizarTablero() {
-        Ficha[][] tableroFichas = tablero.getTablero();
-        for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if(tableroFichas[i][j] != null) {
                     Image icono = cargarIconoFicha(tableroFichas[i][j]);
@@ -212,6 +212,13 @@ public class VentanaAjedrez extends JFrame  {
                 }
             }
         }
+    }
+
+    private void reiniciarTablero() {
+        tablero = new Tablero();
+        esTurnoBlancas = true;
+        actualizarTablero();
+        actualizarTituloTurno();
     }
 
     
