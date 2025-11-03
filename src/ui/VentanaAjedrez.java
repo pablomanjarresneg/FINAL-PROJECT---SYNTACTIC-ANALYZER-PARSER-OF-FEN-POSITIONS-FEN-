@@ -225,8 +225,50 @@ public class VentanaAjedrez extends JFrame  {
         boolean exito = codificador.validarFEN(fen);
 
         if (exito) {
+            List<String> filas = codificador.cargarDesdeFEN(fen);
+            
+            Ficha[][] nuevoTablero = new Ficha[8][8];
+            for (int fila = 0; fila < 8; fila++) {
+                String filaFEN = filas.get(fila);
+                int col = 0;
+                for (char c : filaFEN.toCharArray()) {
+                    if (c == ' ') {
+                        col++;
+                    } else {
+                        String tipoFicha;
+                        String colorFicha;
+                        if (Character.isUpperCase(c)) {
+                            colorFicha = "blanco";
+                        } else {
+                            colorFicha = "negro";
+                        }
+                        switch (Character.toLowerCase(c)) {
+                            case 'p' -> tipoFicha = "peon";
+                            case 'r' -> tipoFicha = "torre";
+                            case 'n' -> tipoFicha = "caballo";
+                            case 'b' -> tipoFicha = "alfil";
+                            case 'q' -> tipoFicha = "reina";
+                            case 'k' -> tipoFicha = "rey";
+                            default -> tipoFicha = "";
+                        }
+                        Ficha ficha = switch (tipoFicha) {
+                            case "peon" -> new Clases.Peon(colorFicha, tipoFicha, cargarIconoFicha(new Clases.Peon(colorFicha, tipoFicha, null)));
+                            case "torre" -> new Clases.Torre(colorFicha, tipoFicha, cargarIconoFicha(new Clases.Torre(colorFicha, tipoFicha, null)));
+                            case "caballo" -> new Clases.Caballo(colorFicha, tipoFicha, cargarIconoFicha(new Clases.Caballo(colorFicha, tipoFicha, null)));
+                            case "alfil" -> new Clases.Alfil(colorFicha, tipoFicha, cargarIconoFicha(new Clases.Alfil(colorFicha, tipoFicha, null)));
+                            case "reina" -> new Clases.Reina(colorFicha, tipoFicha, cargarIconoFicha(new Clases.Reina(colorFicha, tipoFicha, null)));
+                            case "rey" -> new Clases.Rey(colorFicha, tipoFicha, cargarIconoFicha(new Clases.Rey(colorFicha, tipoFicha, null)));
+                            default -> null;
+                        };
+                        nuevoTablero[fila][col] = ficha;
+                        col++;
+                    }
+                }
+            }
+            tablero.setTablero(nuevoTablero);
+
             actualizarTablero();
-            tablero = codificador.cargarTableroFEN(fen);
+
             esTurnoBlancas = true;
             actualizarTituloTurno();
             codificador.limpiarMovimientos(); // Clear previous moves

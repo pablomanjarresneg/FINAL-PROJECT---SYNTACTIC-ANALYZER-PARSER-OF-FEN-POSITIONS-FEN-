@@ -21,6 +21,11 @@ public class Tablero {
     public Ficha[][] getTablero() {
         return tablero;
     }
+    public void setTablero(Ficha[][] nuevoTablero) {
+        for (int fila = 0; fila < 8; fila++) {
+            System.arraycopy(nuevoTablero[fila], 0, tablero[fila], 0, 8);
+        }
+    }
 
     // ---------------------------------------------------------
     // Inicializa las piezas en sus posiciones estándar de ajedrez
