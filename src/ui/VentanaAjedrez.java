@@ -198,7 +198,7 @@ public class VentanaAjedrez extends JFrame  {
             JOptionPane.showMessageDialog(this, "Error al aplicar algunos movimientos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    private void actualizarTablero() {
+    protected void actualizarTablero() {
         Ficha[][] tableroFichas = tablero.getTablero();
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -219,14 +219,29 @@ public class VentanaAjedrez extends JFrame  {
         }
     }
 
-    
+    protected boolean cargarPartidaDesdeFEN(String fen) {
+        tablero = new Tablero();
+        boolean exito = tablero.cargarDesdeFEN(fen);
+        
+        if (exito) {
+            actualizarTablero();
+            esTurnoBlancas = true;
+            actualizarTituloTurno();
+            codificador.limpiarMovimientos(); // Clear previous moves
+            JOptionPane.showMessageDialog(this, "Partida cargada exitosamente desde FEN.", "Cargar Partida", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al cargar la partida desde la cadena FEN.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
 
-    private void cambiarTurno() {
+        return exito;
+    }
+
+    protected void cambiarTurno() {
         esTurnoBlancas = !esTurnoBlancas;
         actualizarTituloTurno();
     }
 
-    private Image cargarIconoFicha(Ficha ficha) {
+    protected Image cargarIconoFicha(Ficha ficha) {
         String rutaBase = "src/public/pieces/";
         String color = ficha.getColor().equals("blanco") ? "W_" : "B_";
         String tipo = switch (ficha.getTipo()) {
@@ -246,7 +261,7 @@ public class VentanaAjedrez extends JFrame  {
         return scaledImage;
     }
 
-    private void procesarMovimiento(JTextField campo, boolean esBlanca) {
+    protected void procesarMovimiento(JTextField campo, boolean esBlanca) {
         String movimiento = campo.getText().trim();
         if (movimiento.isEmpty()) return;
 
@@ -268,7 +283,7 @@ public class VentanaAjedrez extends JFrame  {
         }
     }
 
-    private boolean intentarAplicarMovimiento(String movimiento, boolean esBlanca) {
+    protected boolean intentarAplicarMovimiento(String movimiento, boolean esBlanca) {
         String origen = movimiento.substring(0, 2);
         String destino = movimiento.substring(2, 4);
 
@@ -304,7 +319,7 @@ public class VentanaAjedrez extends JFrame  {
         return false;
     }
 
-    private void actualizarTituloTurno() {
+    protected void actualizarTituloTurno() {
         String tituloTurno = esTurnoBlancas ? "Turno de las Blancas" : "Turno de las Negras";
         
         // Find the movements panel and update its border
