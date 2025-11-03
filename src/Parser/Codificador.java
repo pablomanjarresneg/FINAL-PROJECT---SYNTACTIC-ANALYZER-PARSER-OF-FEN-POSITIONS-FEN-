@@ -33,9 +33,14 @@ public class Codificador {
 
     public ArrayList<String> cargarDesdeFEN(String fen) {
         ArrayList<String> filas = new ArrayList<>();
-        
-        // Split FEN by '/' to get each row
-        String[] filasFEN = fen.split("/");
+        // If full FEN provided (has spaces after piece placement), take only the piece placement part
+        String piezaPlacement = fen;
+        if (fen.contains(" ")) {
+            piezaPlacement = fen.split(" ")[0];
+        }
+
+        // Split piece placement by '/' to get each row
+        String[] filasFEN = piezaPlacement.split("/");
         
         for (String filaFEN : filasFEN) {
             StringBuilder filaExpandida = new StringBuilder();
@@ -48,7 +53,13 @@ public class Codificador {
                         filaExpandida.append(" ");
                     }
                 } else {
-                    filaExpandida.append(c);
+                    // Only accept valid piece letters
+                    if ("prnbqkPRNBQK".indexOf(c) != -1) {
+                        filaExpandida.append(c);
+                    } else {
+                        System.err.println("Caracter inválido en FEN: '" + c + "' en fila: " + filaFEN);
+                        filaExpandida.append('?');
+                    }
                 }
             }
             
@@ -70,7 +81,13 @@ public class Codificador {
 
 
     public boolean validarFEN(String fen) {
-        String[] filas = fen.split("/");
+        // Accept full FEN strings, but only validate the piece placement field (before first space)
+        String piezaPlacement = fen;
+        if (fen.contains(" ")) {
+            piezaPlacement = fen.split(" ")[0];
+        }
+
+        String[] filas = piezaPlacement.split("/");
         if (filas.length != 8) return false;
 
         // Validar cada fila

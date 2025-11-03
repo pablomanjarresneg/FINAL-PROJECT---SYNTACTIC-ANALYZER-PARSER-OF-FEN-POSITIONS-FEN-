@@ -1,0 +1,12 @@
+src/ui/VentanaAjedrez.java
+src/ui/Menu.java
+src/Parser/Codificador.java
+src/Motor/Tablero.java
+src/Clases/Ficha.java
+src/Clases/Alfil.java
+src/Clases/Rey.java
+src/Clases/Caballo.java
+src/Clases/Reina.java
+src/Clases/Peon.java
+src/Clases/Torre.java
+src/Main/Main.java

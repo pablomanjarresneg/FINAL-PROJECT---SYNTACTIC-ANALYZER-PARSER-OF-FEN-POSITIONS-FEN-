@@ -218,6 +218,45 @@ public class VentanaAjedrez extends JFrame  {
         guardarYCargarPanel.add(botonReiniciar);
         guardarYCargarPanel.add(loadWithFEN);
 
+        // Botón para volver al menú (con confirmación si hay movimientos no guardados)
+        JButton botonVolverMenu = new JButton("Volver al Menú");
+        botonVolverMenu.setFocusPainted(false);
+        botonVolverMenu.setBackground(Color.lightGray);
+        botonVolverMenu.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonVolverMenu.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "",
+                TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION
+            ),
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        botonVolverMenu.addActionListener(e -> {
+            // Si no hay movimientos registrados, volver directamente
+            if (codificador.getMovimientos().isEmpty()) {
+                Menu menu = new Menu();
+                menu.setVisible(true);
+                this.dispose();
+                return;
+            }
+
+            // Si hay movimientos, preguntar confirmación
+            int opcion = JOptionPane.showConfirmDialog(this,
+                    "Hay movimientos no guardados. ¿Desea volver al menú y perder el progreso?",
+                    "Confirmar regreso al menú",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (opcion == JOptionPane.YES_OPTION) {
+                Menu menu = new Menu();
+                menu.setVisible(true);
+                this.dispose();
+            }
+        });
+
+        guardarYCargarPanel.add(botonVolverMenu);
+
         add(guardarYCargarPanel, BorderLayout.NORTH);
         add(panelTablero, BorderLayout.CENTER);
         add(panelMovimientos, BorderLayout.SOUTH);
@@ -337,7 +376,19 @@ public class VentanaAjedrez extends JFrame  {
 
             // Update the board FIRST, then check game state
             actualizarTablero();
-            esTurnoBlancas = true;
+
+            // Set side to move based on FEN (second field): 'w' => blancas, 'b' => negras
+            if (fen.contains(" ")) {
+                String[] partes = fen.split(" ");
+                if (partes.length > 1 && partes[1].equalsIgnoreCase("b")) {
+                    esTurnoBlancas = false;
+                } else {
+                    esTurnoBlancas = true;
+                }
+            } else {
+                esTurnoBlancas = true;
+            }
+
             actualizarTituloTurno();
             codificador.limpiarMovimientos();
             
