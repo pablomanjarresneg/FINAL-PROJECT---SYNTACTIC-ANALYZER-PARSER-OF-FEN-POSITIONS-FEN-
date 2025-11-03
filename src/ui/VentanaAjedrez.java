@@ -149,9 +149,40 @@ public class VentanaAjedrez extends JFrame  {
             actualizarTablero();
             actualizarTituloTurno();
         });
+        JButton loadWithFEN = new JButton("Cargar Partida con FEN");
+        loadWithFEN.setFocusPainted(false);
+        loadWithFEN.setBackground(Color.lightGray);
+        loadWithFEN.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        loadWithFEN.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "",
+                TitledBorder.CENTER,
+                TitledBorder.DEFAULT_POSITION
+            ),
+            BorderFactory.createEmptyBorder(10, 20, 10, 20)
+        ));
+        loadWithFEN.addActionListener(e -> {
+            VentanaAjedrez ventana = new VentanaAjedrez();
+            String fenInput = JOptionPane.showInputDialog(this, "Ingrese la cadena FEN para cargar la partida:", "Cargar Partida con FEN", JOptionPane.PLAIN_MESSAGE);
+            if (fenInput == null || fenInput.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Entrada FEN inválida.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            fenInput = fenInput.trim();
+            boolean exito = ventana.cargarPartidaDesdeFEN(fenInput);
+
+            if (!exito) {
+                JOptionPane.showMessageDialog(this, "Error al cargar la partida desde la cadena FEN.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            ventana.setVisible(true);
+            this.dispose();
+        });
         guardarYCargarPanel.add(botonGuardar);
         guardarYCargarPanel.add(botonCargar);
         guardarYCargarPanel.add(botonReiniciar);
+        guardarYCargarPanel.add(loadWithFEN);
 
         add(guardarYCargarPanel, BorderLayout.NORTH);
         add(panelTablero, BorderLayout.CENTER);

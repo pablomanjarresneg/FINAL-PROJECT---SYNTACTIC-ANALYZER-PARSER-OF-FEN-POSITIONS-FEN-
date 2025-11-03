@@ -89,6 +89,7 @@ public class Menu extends JFrame {
             ),
             BorderFactory.createEmptyBorder(10, 20, 10, 20)
         ));
+        
         loadWithFEN.addActionListener(e -> {
             VentanaAjedrez ventana = new VentanaAjedrez();
             String fenInput = JOptionPane.showInputDialog(this, "Ingrese la cadena FEN para cargar la partida:", "Cargar Partida con FEN", JOptionPane.PLAIN_MESSAGE);
