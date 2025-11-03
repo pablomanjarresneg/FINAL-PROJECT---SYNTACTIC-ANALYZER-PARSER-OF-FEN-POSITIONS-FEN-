@@ -174,6 +174,7 @@ public class Tablero {
         return false; // No hay movimientos legales
     }
 
+
     public boolean esJaque(String color) {
         int[] posicionRey = encontrarRey(color);
         if (!hayRey(color)) {

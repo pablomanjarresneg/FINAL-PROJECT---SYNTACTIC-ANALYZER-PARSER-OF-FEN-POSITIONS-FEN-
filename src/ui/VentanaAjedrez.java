@@ -161,7 +161,7 @@ public class VentanaAjedrez extends JFrame  {
         setLocationRelativeTo(null);
     }
     protected void cargarPartida(String nombreArchivo) {
-        String rutaCompleta = "partidas/" + nombreArchivo + ".bnf";
+        String rutaCompleta = "partidas/" + nombreArchivo + ".md";
         List<String> movimientosCargados = codificador.cargarPartidaBNF(rutaCompleta);
         
         if (movimientosCargados.isEmpty()) {
@@ -226,6 +226,7 @@ public class VentanaAjedrez extends JFrame  {
 
         if (exito) {
             actualizarTablero();
+            tablero = codificador.cargarTableroFEN(fen);
             esTurnoBlancas = true;
             actualizarTituloTurno();
             codificador.limpiarMovimientos(); // Clear previous moves

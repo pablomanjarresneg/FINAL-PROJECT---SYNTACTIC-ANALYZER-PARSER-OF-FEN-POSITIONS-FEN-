@@ -30,13 +30,47 @@ public class Codificador {
                movimiento.matches(notacionCoordenadaDestino);
     }
 
-    public boolean validarFEN(String fen) {
-        // Validación básica de formato FEN
-        String[] partes = fen.split(" ");
-        if (partes.length != 6) return false;
 
-        // Validar estructura del tablero
-        String[] filas = partes[0].split("/");
+    public ArrayList<String> cargarDesdeFEN(String fen) {
+        ArrayList<String> filas = new ArrayList<>();
+        
+        // Split FEN by '/' to get each row
+        String[] filasFEN = fen.split("/");
+        
+        for (String filaFEN : filasFEN) {
+            StringBuilder filaExpandida = new StringBuilder();
+            
+            // Process each character in the row
+            for (char c : filaFEN.toCharArray()) {
+                if (Character.isDigit(c)) {
+                    int espaciosVacios = Character.getNumericValue(c);
+                    for (int i = 0; i < espaciosVacios; i++) {
+                        filaExpandida.append(" ");
+                    }
+                } else {
+                    filaExpandida.append(c);
+                }
+            }
+            
+            // Add the expanded row (should be 8 characters)
+            if (filaExpandida.length() == 8) {
+                filas.add(filaExpandida.toString());
+            } else {
+                System.err.println("Error: Fila no tiene 8 caracteres: " + filaExpandida.toString());
+            }
+        }
+        
+        System.out.println("Filas cargadas desde FEN:");
+        for (int i = 0; i < filas.size(); i++) {
+            System.out.println("Fila " + (i + 1) + ": [" + filas.get(i) + "]");
+        }
+        
+        return filas;
+    }
+
+
+    public boolean validarFEN(String fen) {
+        String[] filas = fen.split("/");
         if (filas.length != 8) return false;
 
         // Validar cada fila
