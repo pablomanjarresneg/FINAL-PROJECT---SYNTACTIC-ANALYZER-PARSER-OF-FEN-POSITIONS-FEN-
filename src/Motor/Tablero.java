@@ -83,6 +83,9 @@ public class Tablero {
     // ---------------------------------------------------------
     // Mueve una ficha si el movimiento es válido
     // ---------------------------------------------------------
+    private int turnoActual = 1;
+    private Ficha ultimoPeonMovidoDoble = null;
+    
     public boolean mover(String origen, String destino) {
         int[] o = convertirPos(origen);
         int[] d = convertirPos(destino);
@@ -98,15 +101,74 @@ public class Tablero {
         }
 
         if (ficha.movimientoValido(filaOrigen, colOrigen, filaDestino, colDestino, tablero)) {
-            System.out.println("Moviendo " + ficha.getTipo() + " de " + origen + " a " + destino);
-            tablero[filaDestino][colDestino] = ficha;
-            tablero[filaOrigen][colOrigen] = null;
+            // Manejar enroque
+            if (ficha instanceof Rey && Math.abs(colDestino - colOrigen) == 2) {
+                realizarEnroque(filaOrigen, colOrigen, colDestino);
+            }
+            // Manejar captura al paso
+            else if (ficha instanceof Peon && Math.abs(colDestino - colOrigen) == 1 && 
+                     tablero[filaDestino][colDestino] == null) {
+                realizarCapturaAlPaso(filaOrigen, colOrigen, filaDestino, colDestino);
+            }
+            // Movimiento normal
+            else {
+                tablero[filaDestino][colDestino] = ficha;
+                tablero[filaOrigen][colOrigen] = null;
+            }
+
+            // Actualizar estado de la pieza
             ficha.setPosicion(destino);
+            ficha.setTurnoUltimoMovimiento(turnoActual);
+
+            // Registrar peón que se movió dos casillas (para en passant)
+            if (ficha instanceof Peon && Math.abs(filaDestino - filaOrigen) == 2) {
+                ultimoPeonMovidoDoble = ficha;
+            } else {
+                ultimoPeonMovidoDoble = null;
+            }
+
+            turnoActual++;
             return true;
         } else {
             System.out.println("Movimiento inválido para " + ficha.getTipo() + " en " + origen);
             return false;
         }
+    }
+
+    private void realizarEnroque(int fila, int colOrigen, int colDestino) {
+        boolean enroqueCorto = colDestino > colOrigen;
+        int colTorre = enroqueCorto ? 7 : 0;
+        int nuevaColTorre = enroqueCorto ? colDestino - 1 : colDestino + 1;
+        
+        // Mover rey
+        Ficha rey = tablero[fila][colOrigen];
+        tablero[fila][colDestino] = rey;
+        tablero[fila][colOrigen] = null;
+        
+        // Mover torre
+        Ficha torre = tablero[fila][colTorre];
+        tablero[fila][nuevaColTorre] = torre;
+        tablero[fila][colTorre] = null;
+        
+        // Actualizar estado de las piezas
+        torre.setPosicion(convertirIndicesAPosicion(fila, nuevaColTorre));
+        torre.setTurnoUltimoMovimiento(turnoActual);
+    }
+
+    private void realizarCapturaAlPaso(int filaOrigen, int colOrigen, int filaDestino, int colDestino) {
+        // Mover el peón que captura
+        Ficha peon = tablero[filaOrigen][colOrigen];
+        tablero[filaDestino][colDestino] = peon;
+        tablero[filaOrigen][colOrigen] = null;
+        
+        // Eliminar el peón capturado
+        tablero[filaOrigen][colDestino] = null;
+    }
+
+    private String convertirIndicesAPosicion(int fila, int columna) {
+        char col = (char)('a' + columna);
+        int fil = 8 - fila;
+        return "" + col + fil;
     }
     public boolean esTurnoCorrecto(String origen, boolean esBlanca) {
         int[] o = convertirPos(origen);

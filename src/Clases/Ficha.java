@@ -7,11 +7,15 @@ public abstract class Ficha {
     protected String tipo;      // "peon", "torre", etc.
     protected Image icono;     // símbolo unicode (♙, ♜, etc.)
     protected String posicion;  // opcional, por si quieres guardar "e4"
+    protected boolean seHaMovido;  // para enroque y control de movimientos
+    protected int turnoUltimoMovimiento;  // para en passant y otros controles
 
     public Ficha(String color, String tipo, Image icono) {
         this.color = color;
         this.tipo = tipo;
         this.icono = icono;
+        this.seHaMovido = false;
+        this.turnoUltimoMovimiento = -1;
     }
 
     public String getColor() {
@@ -32,6 +36,19 @@ public abstract class Ficha {
 
     public void setPosicion(String posicion) {
         this.posicion = posicion;
+        this.seHaMovido = true;
+    }
+
+    public boolean seHaMovido() {
+        return seHaMovido;
+    }
+
+    public int getTurnoUltimoMovimiento() {
+        return turnoUltimoMovimiento;
+    }
+
+    public void setTurnoUltimoMovimiento(int turno) {
+        this.turnoUltimoMovimiento = turno;
     }
 
     // método abstracto que cada ficha implementa a su manera
