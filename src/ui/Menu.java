@@ -12,7 +12,6 @@ public class Menu extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 500); // Increased height for 4 buttons
         setVisible(true);
-        setResizable(false);
 
         JPanel panel = new JPanel(new BorderLayout(15, 15));
         panel.setBorder(BorderFactory.createCompoundBorder(

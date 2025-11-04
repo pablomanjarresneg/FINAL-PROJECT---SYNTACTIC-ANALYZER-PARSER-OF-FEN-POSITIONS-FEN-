@@ -4,9 +4,12 @@ import Clases.Ficha;
 import Motor.Tablero;
 import Parser.Codificador;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+
 
 public class VentanaAjedrez extends JFrame  {
     private Tablero tablero;
@@ -26,7 +29,6 @@ public class VentanaAjedrez extends JFrame  {
         setTitle("Tablero de Ajedrez");
         setSize(700, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setResizable(false);
         JPanel panelTablero = new JPanel(new GridLayout(9,9));
         casillas = new JButton[8][8];
 
@@ -263,6 +265,7 @@ public class VentanaAjedrez extends JFrame  {
         add(panelMovimientos, BorderLayout.SOUTH);
         
         actualizarTablero();
+        moveWithMouse(); 
         setLocationRelativeTo(null);
     }
     protected void cargarPartida(String nombreArchivo) {
@@ -549,6 +552,38 @@ public class VentanaAjedrez extends JFrame  {
         }
     }
     
+
+
+    private void moveWithMouse() {
+        // Add mouse listeners to each chess square button
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                final int fila = i;
+                final int columna = j;
+                casillas[i][j].addMouseListener(new MouseAdapter() {
+                    String movimientos = "";
+
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        System.out.println("Clic en fila: " + fila + ", columna: " + columna);
+                        char columnaChar = (char)('a' + columna);
+                        int filaChess = 8 - fila; // Chess notation starts from bottom
+                        String posicion = "" + columnaChar + filaChess;
+                        System.out.println("Posición en notación de ajedrez: " + posicion);
+
+                        movimientos += posicion;
+                        if (movimientos.length() == 4) {
+                            intentarAplicarMovimiento(movimientos, esTurnoBlancas);
+                            movimientos = ""; // Reset for next move
+                        }
+                    }
+                });
+            }
+        }
+
+    }
+    
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater( () -> {
