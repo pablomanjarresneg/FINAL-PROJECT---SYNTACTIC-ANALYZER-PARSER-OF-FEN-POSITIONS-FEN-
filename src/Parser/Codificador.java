@@ -76,6 +76,20 @@ public class Codificador {
     }
 
 
+    /**
+     * Cuenta las ocurrencias de una pieza específica en el FEN
+     */
+    private int contarPieza(String fen, char pieza) {
+        String piezaPlacement = fen.split(" ")[0];
+        int contador = 0;
+        for (char c : piezaPlacement.toCharArray()) {
+            if (c == pieza) {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
     public boolean validarFEN(String fen) {
         // Extraer solo la parte de posición de piezas (antes del primer espacio)
         String piezaPlacement = fen.split(" ")[0];
@@ -86,6 +100,7 @@ public class Codificador {
 
         // Validar formato general
         if (!patronFENCompleto.matcher(piezaPlacement).matches()) {
+            System.err.println("Error: Formato FEN inválido");
             return false;
         }
 
@@ -98,7 +113,6 @@ public class Codificador {
             Matcher matcher = patronDigito.matcher(fila);
 
             // Calcular suma expandiendo dígitos
-            String filaExpandida = fila;
             while (matcher.find()) {
                 int digito = Integer.parseInt(matcher.group());
                 suma += digito;
@@ -108,8 +122,98 @@ public class Codificador {
             suma += fila.replaceAll("\\d", "").length();
 
             if (suma != 8) {
+                System.err.println("Error: Fila no suma 8 casillas");
                 return false;
             }
+        }
+
+        // VALIDACIONES DE CANTIDAD DE PIEZAS
+
+        // 1. Validar exactamente 1 rey blanco y 1 rey negro
+        int reyesBlanco = contarPieza(fen, 'K');
+        int reyesNegro = contarPieza(fen, 'k');
+
+        if (reyesBlanco != 1) {
+            System.err.println("Error: Debe haber exactamente 1 rey blanco (K). Encontrados: " + reyesBlanco);
+            return false;
+        }
+
+        if (reyesNegro != 1) {
+            System.err.println("Error: Debe haber exactamente 1 rey negro (k). Encontrados: " + reyesNegro);
+            return false;
+        }
+
+        // 2. Validar máximo 8 peones por color
+        int peonesBlanco = contarPieza(fen, 'P');
+        int peonesNegro = contarPieza(fen, 'p');
+
+        if (peonesBlanco > 8) {
+            System.err.println("Error: Máximo 8 peones blancos (P). Encontrados: " + peonesBlanco);
+            return false;
+        }
+
+        if (peonesNegro > 8) {
+            System.err.println("Error: Máximo 8 peones negros (p). Encontrados: " + peonesNegro);
+            return false;
+        }
+
+        // 3. Validar máximo de piezas por tipo considerando promociones
+        // En ajedrez estándar, puedes tener hasta 9 de una pieza (1 inicial + 8 peones promovidos)
+        int torresBlanco = contarPieza(fen, 'R');
+        int torresNegro = contarPieza(fen, 'r');
+        int caballosBlanco = contarPieza(fen, 'N');
+        int caballosNegro = contarPieza(fen, 'n');
+        int alfilesBlanco = contarPieza(fen, 'B');
+        int alfilesNegro = contarPieza(fen, 'b');
+        int reinasBlanco = contarPieza(fen, 'Q');
+        int reinasNegro = contarPieza(fen, 'q');
+
+        // Máximo 10 de cada pieza (considerando posibles promociones de todos los peones)
+        if (torresBlanco > 10) {
+            System.err.println("Error: Máximo 10 torres blancas (R). Encontradas: " + torresBlanco);
+            return false;
+        }
+        if (torresNegro > 10) {
+            System.err.println("Error: Máximo 10 torres negras (r). Encontradas: " + torresNegro);
+            return false;
+        }
+        if (caballosBlanco > 10) {
+            System.err.println("Error: Máximo 10 caballos blancos (N). Encontrados: " + caballosBlanco);
+            return false;
+        }
+        if (caballosNegro > 10) {
+            System.err.println("Error: Máximo 10 caballos negros (n). Encontrados: " + caballosNegro);
+            return false;
+        }
+        if (alfilesBlanco > 10) {
+            System.err.println("Error: Máximo 10 alfiles blancos (B). Encontrados: " + alfilesBlanco);
+            return false;
+        }
+        if (alfilesNegro > 10) {
+            System.err.println("Error: Máximo 10 alfiles negros (b). Encontrados: " + alfilesNegro);
+            return false;
+        }
+        if (reinasBlanco > 9) {
+            System.err.println("Error: Máximo 9 reinas blancas (Q). Encontradas: " + reinasBlanco);
+            return false;
+        }
+        if (reinasNegro > 9) {
+            System.err.println("Error: Máximo 9 reinas negras (q). Encontradas: " + reinasNegro);
+            return false;
+        }
+
+        // 4. Validar total de piezas por color (máximo 16)
+        int totalBlanco = reyesBlanco + peonesBlanco + torresBlanco + caballosBlanco + alfilesBlanco + reinasBlanco;
+        int totalNegro = reyesNegro + peonesNegro + torresNegro + caballosNegro + alfilesNegro + reinasNegro;
+
+        if (totalBlanco > 16) {
+            System.err.println("Error: Máximo 16 piezas blancas. Encontradas: " + totalBlanco);
+            return false;
+        }
+
+        if (totalNegro > 16) {
+            System.err.println("Error: Máximo 16 piezas negras. Encontradas: " + totalNegro);
+            return false;
         }
 
         return true;
