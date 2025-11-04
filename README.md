@@ -1,5 +1,11 @@
 # FINAL PROJECT - Analizador Sintáctico (Parser) de posiciones FEN
 
+Autores
+-------
+
+- Jeronimo Velez
+- Pablo Manjarres
+
 Resumen
 -------
 Proyecto final: analizador sintáctico para posiciones en notación FEN (Forsyth–Edwards Notation).
@@ -37,6 +43,3 @@ Validar una FEN desde consola:
 Salida esperada (ejemplo):
 - "Válida" o "Inválida: error en campo X (mensaje)"
 - O bien, representación JSON de la posición si se pasa la opción --json
-
-Uso como librería (ejemplo Java)
---------------------------------
