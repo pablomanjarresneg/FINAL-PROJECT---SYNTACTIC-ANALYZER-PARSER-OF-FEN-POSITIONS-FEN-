@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Codificador {
     public List<String> movimientos;
@@ -33,76 +35,81 @@ public class Codificador {
 
     public ArrayList<String> cargarDesdeFEN(String fen) {
         ArrayList<String> filas = new ArrayList<>();
-        // If full FEN provided (has spaces after piece placement), take only the piece placement part
-        String piezaPlacement = fen;
-        if (fen.contains(" ")) {
-            piezaPlacement = fen.split(" ")[0];
+
+        // Extraer solo la parte de posición de piezas (antes del primer espacio)
+        String piezaPlacement = fen.split(" ")[0];
+
+        // Patrón para validar formato de fila FEN: solo dígitos (1-8) y piezas válidas
+        Pattern patronFila = Pattern.compile("^[prnbqkPRNBQK1-8]+$");
+
+        // Dividir por '/' para obtener cada fila
+        String[] filasFEN = piezaPlacement.split("/");
+
+        for (String filaFEN : filasFEN) {
+            // Validar formato de la fila
+            if (!patronFila.matcher(filaFEN).matches()) {
+                System.err.println("Error: Formato inválido en fila FEN: " + filaFEN);
+                continue;
+            }
+
+            // Expandir dígitos a espacios usando expresiones regulares
+            // Reemplaza cada dígito por el número correspondiente de espacios
+            String filaExpandida = filaFEN;
+            for (int i = 1; i <= 8; i++) {
+                filaExpandida = filaExpandida.replaceAll(String.valueOf(i), " ".repeat(i));
+            }
+
+            // Verificar que la fila tenga exactamente 8 caracteres
+            if (filaExpandida.length() == 8) {
+                filas.add(filaExpandida);
+            } else {
+                System.err.println("Error: Fila no tiene 8 caracteres: [" + filaExpandida + "] (longitud: " + filaExpandida.length() + ")");
+            }
         }
 
-        // Split piece placement by '/' to get each row
-        String[] filasFEN = piezaPlacement.split("/");
-        
-        for (String filaFEN : filasFEN) {
-            StringBuilder filaExpandida = new StringBuilder();
-            
-            // Process each character in the row
-            for (char c : filaFEN.toCharArray()) {
-                if (Character.isDigit(c)) {
-                    int espaciosVacios = Character.getNumericValue(c);
-                    for (int i = 0; i < espaciosVacios; i++) {
-                        filaExpandida.append(" ");
-                    }
-                } else {
-                    // Only accept valid piece letters
-                    if ("prnbqkPRNBQK".indexOf(c) != -1) {
-                        filaExpandida.append(c);
-                    } else {
-                        System.err.println("Caracter inválido en FEN: '" + c + "' en fila: " + filaFEN);
-                        filaExpandida.append('?');
-                    }
-                }
-            }
-            
-            // Add the expanded row (should be 8 characters)
-            if (filaExpandida.length() == 8) {
-                filas.add(filaExpandida.toString());
-            } else {
-                System.err.println("Error: Fila no tiene 8 caracteres: " + filaExpandida.toString());
-            }
-        }
-        
         System.out.println("Filas cargadas desde FEN:");
         for (int i = 0; i < filas.size(); i++) {
             System.out.println("Fila " + (i + 1) + ": [" + filas.get(i) + "]");
         }
-        
+
         return filas;
     }
 
 
     public boolean validarFEN(String fen) {
-        // Accept full FEN strings, but only validate the piece placement field (before first space)
-        String piezaPlacement = fen;
-        if (fen.contains(" ")) {
-            piezaPlacement = fen.split(" ")[0];
+        // Extraer solo la parte de posición de piezas (antes del primer espacio)
+        String piezaPlacement = fen.split(" ")[0];
+
+        // Patrón completo para validar formato FEN: 8 filas separadas por '/'
+        // Cada fila debe contener solo piezas válidas (p,r,n,b,q,k mayúsculas/minúsculas) o dígitos (1-8)
+        Pattern patronFENCompleto = Pattern.compile("^([prnbqkPRNBQK1-8]+/){7}[prnbqkPRNBQK1-8]+$");
+
+        // Validar formato general
+        if (!patronFENCompleto.matcher(piezaPlacement).matches()) {
+            return false;
         }
 
+        // Validar que cada fila sume exactamente 8 casillas
         String[] filas = piezaPlacement.split("/");
-        if (filas.length != 8) return false;
+        Pattern patronDigito = Pattern.compile("\\d");
 
-        // Validar cada fila
         for (String fila : filas) {
             int suma = 0;
-            for (char c : fila.toCharArray()) {
-                if (Character.isDigit(c)) {
-                    suma += Character.getNumericValue(c);
-                } else if ("prnbqkPRNBQK".indexOf(c) != -1) {
-                    suma++;
-                } else {
-                    return false;
-                }
+            Matcher matcher = patronDigito.matcher(fila);
+
+            // Calcular suma expandiendo dígitos
+            String filaExpandida = fila;
+            while (matcher.find()) {
+                int digito = Integer.parseInt(matcher.group());
+                suma += digito;
             }
-            if (suma != 8) return false;
+
+            // Contar piezas (caracteres que no son dígitos)
+            suma += fila.replaceAll("\\d", "").length();
+
+            if (suma != 8) {
+                return false;
+            }
         }
 
         return true;
