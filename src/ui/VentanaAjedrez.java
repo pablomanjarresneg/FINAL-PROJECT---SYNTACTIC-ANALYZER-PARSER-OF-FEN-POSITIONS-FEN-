@@ -18,6 +18,7 @@ public class VentanaAjedrez extends JFrame  {
     private final Codificador codificador;
     private boolean esTurnoBlancas = true;
     private boolean juegoTerminado = false;
+    private String movimientoMouse = ""; 
 
     public VentanaAjedrez() {
         tablero = new Tablero();
@@ -182,8 +183,14 @@ public class VentanaAjedrez extends JFrame  {
             tablero = new Tablero();
             esTurnoBlancas = true;
             codificador.limpiarMovimientos();
+            movimientoMouse = ""; // Reset mouse movement
+            juegoTerminado = false; // Reset game state
+            areaMovimientos.setEditable(true); // Re-enable input
+            areaMovimientos.setBackground(Color.WHITE);
+            areaMovimientos.setText("");
             actualizarTablero();
             actualizarTituloTurno();
+            resetearResaltados();
         });
         JButton loadWithFEN = new JButton("Cargar Partida con FEN");
         loadWithFEN.setFocusPainted(false);
@@ -556,31 +563,58 @@ public class VentanaAjedrez extends JFrame  {
 
     private void moveWithMouse() {
         // Add mouse listeners to each chess square button
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {            
             for (int j = 0; j < 8; j++) {
                 final int fila = i;
                 final int columna = j;
                 casillas[i][j].addMouseListener(new MouseAdapter() {
-                    String movimientos = "";
-
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        System.out.println("Clic en fila: " + fila + ", columna: " + columna);
+                        if (juegoTerminado) {
+                            return; // Don't process clicks if game is over
+                        }
                         char columnaChar = (char)('a' + columna);
                         int filaChess = 8 - fila; // Chess notation starts from bottom
                         String posicion = "" + columnaChar + filaChess;
-                        System.out.println("Posición en notación de ajedrez: " + posicion);
-
-                        movimientos += posicion;
-                        if (movimientos.length() == 4) {
-                            intentarAplicarMovimiento(movimientos, esTurnoBlancas);
-                            movimientos = ""; // Reset for next move
+                        // Add position to the current move
+                        movimientoMouse += posicion;
+                        // Highlight the selected square (visual feedback)
+                        if (movimientoMouse.length() == 2) {
+                            // First click - highlight source square
+                            casillas[fila][columna].setBorder(BorderFactory.createLineBorder(Color.YELLOW, 3));
+                        } else if (movimientoMouse.length() == 4) {
+                            // Second click - attempt move and reset
+                            boolean exito = intentarAplicarMovimiento(movimientoMouse, esTurnoBlancas);
+                            
+                            if (exito) {
+                                actualizarTablero();
+                                cambiarTurno();
+                                // Show move in text field for feedback
+                                areaMovimientos.setText(movimientoMouse);
+                            } else {
+                                JOptionPane.showMessageDialog(VentanaAjedrez.this, 
+                                    "Movimiento no permitido: " + movimientoMouse, 
+                                    "Error", 
+                                    JOptionPane.ERROR_MESSAGE);
+                            }
+                            
+                            // Reset for next move and remove highlights
+                            movimientoMouse = "";
+                            resetearResaltados();
                         }
                     }
                 });
             }
         }
+    }
 
+    private void resetearResaltados() {
+        // Reset all squares to their original border
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                casillas[i][j].setBorder(BorderFactory.createRaisedBevelBorder());
+            }
+        }
     }
     
 
