@@ -243,7 +243,7 @@ public class VentanaAjedrez extends JFrame  {
 
             // Si hay movimientos, preguntar confirmación
             int opcion = JOptionPane.showConfirmDialog(this,
-                    "Hay movimientos no guardados. ¿Desea volver al menú y perder el progreso?",
+                    "¿Desea volver al menú y perder el progreso?",
                     "Confirmar regreso al menú",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
@@ -251,6 +251,7 @@ public class VentanaAjedrez extends JFrame  {
             if (opcion == JOptionPane.YES_OPTION) {
                 Menu menu = new Menu();
                 menu.setVisible(true);
+                codificador.limpiarMovimientos();
                 this.dispose();
             }
         });
